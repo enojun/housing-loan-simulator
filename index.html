@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>住宅ローンシミュレーター</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --mint: #00C896; --mint-lt: #E0FBF3; --mint-dk: #007A5A;
+  --coral: #FF6B6B; --coral-lt: #FFF0F0; --coral-dk: #C0392B;
+  --sky: #4DA6FF; --sky-lt: #EBF4FF; --sky-dk: #1A5FAC;
+  --sun: #FFB830; --sun-lt: #FFF8E6; --sun-dk: #9A6A00;
+  --lav: #A78BFA; --lav-lt: #F3EFFE; --lav-dk: #5B34C2;
+  --ink: #1E1E2E; --ink2: #3D3D55; --ink3: #6B6B8A;
+  --surface: #F7F6FD; --white: #FFFFFF;
+  --radius: 16px; --radius-sm: 10px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'M PLUS Rounded 1c', sans-serif;
+  background: var(--surface);
+  color: var(--ink);
+  font-size: 13px;
+  line-height: 1.6;
+}
+.app { padding: 28px; max-width: 1440px; margin: 0 auto; }
+
+/* Header */
+.hdr {
+  display: flex; align-items: center; gap: 16px;
+  margin-bottom: 28px;
+}
+.hdr-badge {
+  display: flex; align-items: center; justify-content: center;
+  width: 52px; height: 52px; border-radius: 18px;
+  background: linear-gradient(135deg, var(--mint) 0%, var(--sky) 100%);
+  font-size: 26px; flex-shrink: 0;
+}
+.hdr-text h1 { font-size: 22px; font-weight: 800; color: var(--ink); letter-spacing: -0.5px; }
+.hdr-text p { font-size: 12px; color: var(--ink3); margin-top: 2px; }
+.hdr-pill {
+  margin-left: auto;
+  background: var(--lav-lt); color: var(--lav-dk);
+  padding: 6px 14px; border-radius: 99px;
+  font-size: 11px; font-weight: 700; letter-spacing: .3px;
+}
+
+/* Layout */
+.layout { display: grid; grid-template-columns: 320px 1fr; gap: 20px; align-items: start; }
+
+/* Card base */
+.card {
+  background: var(--white);
+  border-radius: var(--radius);
+  padding: 20px;
+  border: 1.5px solid rgba(100,100,180,0.08);
+  margin-bottom: 16px;
+}
+.card:last-child { margin-bottom: 0; }
+
+/* Card header strip */
+.card-hdr {
+  display: flex; align-items: center; gap: 8px;
+  margin-bottom: 16px; padding-bottom: 12px;
+  border-bottom: 1.5px dashed rgba(100,100,180,0.12);
+}
+.card-hdr .icon {
+  width: 28px; height: 28px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; flex-shrink: 0;
+}
+.card-hdr h2 { font-size: 12px; font-weight: 700; color: var(--ink2); letter-spacing: .6px; text-transform: uppercase; }
+
+/* Section label */
+.sec {
+  font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+  color: var(--ink3); margin: 14px 0 8px;
+  display: flex; align-items: center; gap: 6px;
+}
+.sec::after { content:''; flex:1; height:1px; background: rgba(100,100,180,0.1); }
+.sec:first-child { margin-top: 0; }
+
+/* Input groups */
+.ig { margin-bottom: 10px; }
+.ig label { display: block; font-size: 11px; font-weight: 700; color: var(--ink3); margin-bottom: 4px; }
+.ig-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.ig input {
+  width: 100%;
+  background: var(--surface);
+  border: 1.5px solid rgba(100,100,180,0.12);
+  border-radius: var(--radius-sm);
+  padding: 9px 12px;
+  color: var(--ink);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px; font-weight: 500;
+  outline: none;
+  transition: border-color .15s, box-shadow .15s;
+}
+.ig input:focus { border-color: var(--sky); box-shadow: 0 0 0 3px rgba(77,166,255,.15); }
+.ig.g input:focus { border-color: var(--mint); box-shadow: 0 0 0 3px rgba(0,200,150,.15); }
+.ig.g label { color: var(--mint-dk); }
+
+/* Rate items */
+.rate-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.rate-item {
+  background: var(--lav-lt);
+  border: 1.5px solid rgba(167,139,250,.2);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+}
+.rate-item label { display: block; font-size: 10px; font-weight: 700; color: var(--lav-dk); margin-bottom: 6px; line-height: 1.4; }
+.rate-item input {
+  width: 100%; background: transparent; border: none;
+  border-bottom: 2px solid rgba(167,139,250,.4);
+  border-radius: 0; padding: 3px 0;
+  color: var(--ink); font-family: 'JetBrains Mono', monospace;
+  font-size: 15px; font-weight: 700; outline: none;
+  transition: border-color .15s;
+}
+.rate-item input:focus { border-bottom-color: var(--lav); }
+.rate-note { font-size: 10px; color: var(--ink3); margin-bottom: 10px; line-height: 1.6; }
+
+/* Calc button */
+.calc-btn {
+  width: 100%; margin-top: 16px; padding: 13px;
+  background: linear-gradient(135deg, var(--mint) 0%, var(--sky) 100%);
+  border: none; border-radius: var(--radius-sm);
+  color: #fff; font-family: 'M PLUS Rounded 1c', sans-serif;
+  font-size: 14px; font-weight: 800; cursor: pointer;
+  letter-spacing: .3px;
+  box-shadow: 0 4px 16px rgba(0,200,150,.3);
+  transition: transform .1s, box-shadow .15s;
+}
+.calc-btn:hover { box-shadow: 0 6px 20px rgba(0,200,150,.4); }
+.calc-btn:active { transform: scale(.98); }
+
+/* Summary pills row */
+.summary-row {
+  display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px;
+  margin-bottom: 16px;
+}
+.s-pill {
+  background: var(--white);
+  border-radius: var(--radius);
+  padding: 14px 12px;
+  text-align: center;
+  border: 1.5px solid rgba(100,100,180,0.08);
+  position: relative; overflow: hidden;
+}
+.s-pill::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 4px;
+  border-radius: 99px 99px 0 0;
+}
+.s-pill.blue::before { background: var(--sky); }
+.s-pill.mint::before { background: var(--mint); }
+.s-pill.sun::before { background: var(--sun); }
+.s-pill.coral::before { background: var(--coral); }
+.s-pill h4 { font-size: 10px; font-weight: 700; color: var(--ink3); margin-bottom: 6px; margin-top: 4px; }
+.s-pill .val { font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 700; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.s-pill .sub { font-size: 10px; color: var(--ink3); margin-top: 2px; }
+.s-pill.mint .val { color: var(--mint-dk); }
+
+/* Table panel */
+.tbl-wrap {
+  background: var(--white); border-radius: var(--radius);
+  border: 1.5px solid rgba(100,100,180,0.08);
+  overflow: hidden; margin-bottom: 16px;
+}
+.tbl-hdr {
+  display: flex; align-items: center; gap: 8px;
+  padding: 14px 18px; background: var(--surface);
+  border-bottom: 1.5px dashed rgba(100,100,180,0.12);
+  font-size: 11px; font-weight: 700; color: var(--ink2); letter-spacing: .6px; text-transform: uppercase;
+}
+.tbl-hdr .tag {
+  margin-left: auto; background: var(--lav-lt);
+  color: var(--lav-dk); padding: 3px 10px; border-radius: 99px;
+  font-size: 10px; font-weight: 700;
+}
+.tbl-scroll { max-height: 380px; overflow-y: auto; }
+.tbl-scroll::-webkit-scrollbar { width: 4px; }
+.tbl-scroll::-webkit-scrollbar-track { background: var(--surface); }
+.tbl-scroll::-webkit-scrollbar-thumb { background: rgba(100,100,180,0.2); border-radius: 2px; }
+table { width: 100%; border-collapse: collapse; font-size: 11.5px; }
+thead th {
+  background: var(--surface); padding: 9px 10px;
+  text-align: right; font-size: 10px; font-weight: 700;
+  letter-spacing: .6px; color: var(--ink3); text-transform: uppercase;
+  position: sticky; top: 0; z-index: 5;
+  border-bottom: 1px solid rgba(100,100,180,.1);
+}
+thead th:first-child, thead th:nth-child(2) { text-align: center; }
+tbody td {
+  padding: 7px 10px; text-align: right;
+  border-bottom: 1px solid rgba(100,100,180,.06);
+  font-family: 'JetBrains Mono', monospace; font-size: 11px;
+}
+tbody td:first-child, tbody td:nth-child(2) {
+  text-align: center;
+  font-family: 'M PLUS Rounded 1c', sans-serif;
+  font-weight: 700; font-size: 11px; color: var(--ink2);
+}
+tbody tr:hover { background: var(--surface); }
+tbody tr.hi { background: #FFFBEE; }
+tbody tr.rc { border-top: 1.5px solid rgba(167,139,250,.3); }
+tbody tr.rc td:first-child {
+  position: relative;
+}
+tbody tr.rc td:first-child::before {
+  content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
+  background: var(--lav); border-radius: 0 2px 2px 0;
+}
+.pos { color: var(--mint-dk); font-weight: 700; }
+.neg { color: var(--coral-dk); font-weight: 700; }
+.ded { color: var(--mint-dk); }
+.rent { color: var(--sun-dk); font-weight: 700; }
+.rcol { color: var(--lav-dk); font-weight: 700; }
+
+/* Analysis bottom */
+.analysis { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.an-card {
+  background: var(--white); border-radius: var(--radius); padding: 16px;
+  border: 1.5px solid rgba(100,100,180,0.08);
+}
+.an-card h4 {
+  font-size: 12px; font-weight: 700; color: var(--ink2);
+  margin-bottom: 12px; padding-bottom: 10px;
+  border-bottom: 1.5px dashed rgba(100,100,180,0.12);
+}
+.an-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 6px 0; border-bottom: 1px solid rgba(100,100,180,.06); font-size: 12px;
+}
+.an-row:last-child { border-bottom: none; }
+.an-row .lbl { color: var(--ink3); }
+.an-row .v { font-family: 'JetBrains Mono', monospace; font-weight: 700; color: var(--ink); }
+.badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 5px 12px; border-radius: 99px;
+  font-size: 11px; font-weight: 700; margin-top: 10px;
+}
+.badge.green { background: var(--mint-lt); color: var(--mint-dk); }
+.badge.amber { background: var(--sun-lt); color: var(--sun-dk); }
+.badge.red { background: var(--coral-lt); color: var(--coral-dk); }
+.note { font-size: 11px; color: var(--ink3); margin-top: 10px; line-height: 1.7; }
+.note strong { color: var(--ink2); }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- Header -->
+  <div class="hdr">
+    <div class="hdr-badge">🏠</div>
+    <div class="hdr-text">
+      <h1>住宅ローンシミュレーター</h1>
+      <p>借入条件・住宅ローン控除・5年毎金利変動を考慮した年次詳細分析</p>
+    </div>
+    <div class="hdr-pill">✦ 変動金利対応</div>
+  </div>
+
+  <div class="layout">
+
+    <!-- Left: Inputs -->
+    <div>
+      <div class="card">
+        <div class="card-hdr">
+          <div class="icon" style="background:var(--sky-lt);">📋</div>
+          <h2>基本情報・費用・控除</h2>
+        </div>
+
+        <div class="sec">基本情報</div>
+        <div class="ig-row">
+          <div class="ig"><label>開始年齢（歳）</label><input type="number" id="startAge" value="41" min="20" max="80" onchange="buildRates()"></div>
+          <div class="ig"><label>返済期間（年）</label><input type="number" id="years" value="35" min="5" max="50" onchange="buildRates()"></div>
+        </div>
+        <div class="ig"><label>借入金額（万円）</label><input type="number" id="principal" value="4500"></div>
+        <div class="ig"><label>想定売却価格（万円）</label><input type="number" id="salePrice" value="4000"></div>
+
+        <div class="sec">年間費用</div>
+        <div class="ig-row">
+          <div class="ig"><label>固定資産税（万円/年）</label><input type="number" id="propertyTax" value="12" step="0.1"></div>
+          <div class="ig"><label>保険料（万円/年）</label><input type="number" id="insurance" value="10" step="0.1"></div>
+        </div>
+        <div class="ig"><label>メンテナンス費（万円/年）</label><input type="number" id="maintenance" value="10" step="0.1"></div>
+
+        <div class="sec">住宅ローン控除</div>
+        <div class="ig-row">
+          <div class="ig g"><label>年間控除額（万円）</label><input type="number" id="deductionAmount" value="20" step="0.1"></div>
+          <div class="ig g"><label>控除期間（年）</label><input type="number" id="deductionYears" value="13"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-hdr">
+          <div class="icon" style="background:var(--lav-lt);">📈</div>
+          <h2>金利設定（5年毎・年率%）</h2>
+        </div>
+        <div class="rate-note">各5年ブロックの金利を個別設定。変更時は残債ベースで月返済額を再計算します。</div>
+        <div class="rate-grid" id="rate-grid"></div>
+        <button class="calc-btn" onclick="calc()">▶ 計算実行</button>
+      </div>
+    </div>
+
+    <!-- Right: Results -->
+    <div>
+      <div class="summary-row">
+        <div class="s-pill blue"><h4>初期月返済額</h4><div class="val" id="c-monthly">―</div><div class="sub">1〜5年目</div></div>
+        <div class="s-pill blue"><h4>初期年間総支出</h4><div class="val" id="c-annual">―</div><div class="sub">1年目</div></div>
+        <div class="s-pill mint"><h4>総控除額</h4><div class="val" id="c-deduction">―</div></div>
+        <div class="s-pill blue"><h4>実質総支払額</h4><div class="val" id="c-total">―</div></div>
+        <div class="s-pill sun"><h4>最終年家賃相当</h4><div class="val" id="c-finalrent">―</div></div>
+      </div>
+
+      <div class="tbl-wrap">
+        <div class="tbl-hdr">
+          📊 年次詳細計算結果
+          <span class="tag">左端 紫線 = 金利変更年</span>
+        </div>
+        <div class="tbl-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>年</th><th>年齢</th>
+                <th>金利</th><th>月返済額</th>
+                <th>年間支出</th><th>控除額</th>
+                <th>実質累計支出</th><th>残債額</th>
+                <th>手元残金</th><th>売却利益</th>
+                <th>家賃相当額</th>
+              </tr>
+            </thead>
+            <tbody id="tbl"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="analysis">
+        <div class="an-card">
+          <h4>📈 家賃相当額の推移</h4>
+          <div id="trend-content"><span class="note">計算を実行してください</span></div>
+        </div>
+        <div class="an-card">
+          <h4>📋 投資判断ガイド</h4>
+          <div id="guide-content"><span class="note">計算を実行してください</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function buildRates() {
+  const years = +document.getElementById('years').value || 35;
+  const startAge = +document.getElementById('startAge').value || 41;
+  const periods = Math.ceil(years / 5);
+  const grid = document.getElementById('rate-grid');
+  const prev = {};
+  grid.querySelectorAll('.rate-item').forEach(el => { prev[+el.dataset.idx] = el.querySelector('input').value; });
+  grid.innerHTML = '';
+  for (let i = 0; i < periods; i++) {
+    const from = i * 5 + 1, to = Math.min((i+1)*5, years);
+    const af = startAge + from - 1, at = startAge + to - 1;
+    const val = prev[i] !== undefined ? prev[i] : (prev[0] || '0.7');
+    const div = document.createElement('div');
+    div.className = 'rate-item'; div.dataset.idx = i;
+    div.innerHTML = `<label>${from}〜${to}年目 / ${af}〜${at}歳</label>
+      <input type="number" step="0.05" min="0.1" max="15" value="${val}">`;
+    grid.appendChild(div);
+  }
+}
+
+function getRateForYear(y) {
+  const idx = Math.floor((y-1)/5);
+  const items = document.getElementById('rate-grid').querySelectorAll('.rate-item');
+  return (+items[Math.min(idx, items.length-1)].querySelector('input').value || 0.7) / 100;
+}
+
+function mp(bal, ar, mo) {
+  if (mo <= 0) return 0;
+  const r = ar / 12;
+  if (r === 0) return bal / mo;
+  return bal * (r * Math.pow(1+r, mo)) / (Math.pow(1+r, mo) - 1);
+}
+
+function fmt(n) { return Math.round(n).toLocaleString() + '円'; }
+
+function calc() {
+  const startAge    = +document.getElementById('startAge').value;
+  const principal   = +document.getElementById('principal').value * 10000;
+  const years       = +document.getElementById('years').value;
+  const salePrice   = +document.getElementById('salePrice').value * 10000;
+  const propTax     = +document.getElementById('propertyTax').value * 10000;
+  const ins         = +document.getElementById('insurance').value * 10000;
+  const maint       = +document.getElementById('maintenance').value * 10000;
+  const annDed      = +document.getElementById('deductionAmount').value * 10000;
+  const dedYrs      = +document.getElementById('deductionYears').value;
+  const annOther    = propTax + ins + maint;
+
+  let bal = principal;
+  const yd = [];
+  for (let y = 1; y <= years; y++) {
+    const rate = getRateForYear(y);
+    const remMo = (years - (y-1)) * 12;
+    const m = mp(bal, rate, remMo);
+    const r = rate / 12;
+    let annPay = 0;
+    for (let mo = 0; mo < 12; mo++) {
+      annPay += m;
+      bal = Math.max(0, bal - (m - bal * r));
+    }
+    yd.push({ y, age: startAge+y, rate, mp: Math.round(m),
+      annPay: Math.round(annPay), balance: Math.round(bal),
+      isChg: y === 1 || y % 5 === 1 });
+  }
+
+  let cumP=0, cumO=0, cumD=0;
+  const res = [];
+  yd.forEach(d => {
+    cumP += d.annPay; cumO += annOther;
+    const ded = d.y <= dedYrs ? annDed : 0;
+    cumD += ded;
+    const cumT = cumP + cumO - cumD;
+    res.push({ ...d,
+      annCost: d.annPay + Math.round(annOther),
+      ded: Math.round(ded), cumT: Math.round(cumT),
+      cash: Math.round(salePrice - d.balance),
+      profit: Math.round(salePrice - cumT - d.balance),
+      rent: Math.round((cumT + d.balance - salePrice) / (d.y * 12))
+    });
+  });
+
+  let totDed = 0; res.forEach(r => totDed += r.ded);
+  const last = res[res.length-1];
+  document.getElementById('c-monthly').textContent   = fmt(res[0].mp);
+  document.getElementById('c-annual').textContent    = fmt(res[0].annCost);
+  document.getElementById('c-deduction').textContent = fmt(totDed);
+  document.getElementById('c-total').textContent     = fmt(last.cumT);
+  document.getElementById('c-finalrent').textContent = fmt(last.rent);
+
+  const hi = new Set([4,9,14,19,24,29,34]);
+  const tbody = document.getElementById('tbl');
+  tbody.innerHTML = '';
+  res.forEach((r, i) => {
+    const tr = document.createElement('tr');
+    const cls = [];
+    if (hi.has(i)) cls.push('hi');
+    if (r.isChg && r.y > 1) cls.push('rc');
+    tr.className = cls.join(' ');
+    tr.innerHTML = `
+      <td>${r.y}年目</td><td>${r.age}歳</td>
+      <td class="rcol">${(r.rate*100).toFixed(2)}%</td>
+      <td>${r.mp.toLocaleString()}</td>
+      <td>${r.annCost.toLocaleString()}</td>
+      <td class="ded">${r.ded>0?'▼'+r.ded.toLocaleString():'—'}</td>
+      <td>${r.cumT.toLocaleString()}</td>
+      <td>${r.balance.toLocaleString()}</td>
+      <td class="${r.cash>=0?'pos':'neg'}">${r.cash.toLocaleString()}</td>
+      <td class="${r.profit>=0?'pos':'neg'}">${r.profit.toLocaleString()}</td>
+      <td class="rent">${r.rent.toLocaleString()}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  const g = y => res[y-1] ? res[y-1].rent : null;
+  const r5=g(5), r10=g(10), r20=g(20), rF=last.rent;
+  const mT=Math.round(propTax/12), mI=Math.round(ins/12), mM=Math.round(maint/12), mD=Math.round(annDed/12);
+
+  document.getElementById('trend-content').innerHTML = `
+    <div class="an-row"><span class="lbl">5年目（${startAge+5}歳）</span><span class="v">${r5?r5.toLocaleString()+'円/月':'―'}</span></div>
+    <div class="an-row"><span class="lbl">10年目（${startAge+10}歳）</span><span class="v">${r10?r10.toLocaleString()+'円/月':'―'}</span></div>
+    <div class="an-row"><span class="lbl">20年目（${startAge+20}歳）</span><span class="v">${r20?r20.toLocaleString()+'円/月':'―'}</span></div>
+    <div class="an-row"><span class="lbl">最終年（${startAge+years}歳）</span><span class="v">${rF.toLocaleString()}円/月</span></div>
+    <div class="note">固定資産税: ${mT.toLocaleString()}円/月<br>保険料: ${mI.toLocaleString()}円/月<br>メンテナンス費: ${mM.toLocaleString()}円/月<br><strong>合計固定費: ${(mT+mI+mM).toLocaleString()}円/月</strong></div>
+    <div class="note" style="color:var(--mint-dk)">控除月額効果: ${mD.toLocaleString()}円 × ${dedYrs}年間</div>
+  `;
+
+  const finalAge = startAge + years;
+  let verdict, bc;
+  if (r10&&r10>150000){verdict='10年目でも家賃相当額が高額。賃貸も要検討。';bc='red';}
+  else if (r10&&r10>80000){verdict='中長期居住で合理的な選択肢です。';bc='amber';}
+  else{verdict='長期居住で非常にお得な選択肢です。';bc='green';}
+
+  document.getElementById('guide-content').innerHTML = `
+    <div class="an-row"><span class="lbl">短期（〜5年）</span><span class="v">${r5&&r5>150000?'❌ 推奨しない':'⚠️ 要検討'}</span></div>
+    <div class="an-row"><span class="lbl">中期（5〜15年）</span><span class="v">${r10&&r10>100000?'⚠️ 慎重に検討':'✅ 合理的選択'}</span></div>
+    <div class="an-row"><span class="lbl">長期（15年〜）</span><span class="v">${r20&&r20>50000?'✅ 有利':'✅ 非常に有利'}</span></div>
+    <div class="an-row"><span class="lbl">完済時年齢</span><span class="v">${finalAge}歳</span></div>
+    <span class="badge ${bc}">${bc==='green'?'✅':bc==='amber'?'⚡':'⚠️'} ${verdict}</span>
+    <div class="note">${finalAge>65?'⚠️ 定年後も返済が継続する可能性があります。':'✅ 定年前に完済できる見込みです。'}<br>控除期間（${dedYrs}年）中は実質負担が軽減されます。</div>
+  `;
+}
+
+window.onload = function(){ buildRates(); calc(); };
+</script>
+</body>
+</html>
