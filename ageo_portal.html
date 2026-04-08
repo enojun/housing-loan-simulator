@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>上尾ポータル｜地元の評判店まとめ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --primary: #E8451A; --primary-lt: #FFF1ED; --primary-dk: #A82F0E;
+  --accent:  #FFB830; --accent-lt: #FFF8E6;  --accent-dk: #9A6A00;
+  --mint: #00C896; --mint-lt: #E0FBF3; --mint-dk: #007A5A;
+  --sky:  #4DA6FF; --sky-lt:  #EBF4FF; --sky-dk:  #1A5FAC;
+  --lav:  #A78BFA; --lav-lt:  #F3EFFE; --lav-dk:  #5B34C2;
+  --ink:  #1E1E2E; --ink2: #3D3D55; --ink3: #6B6B8A;
+  --surface: #F8F7FD; --white: #FFFFFF;
+  --radius: 16px; --radius-sm: 10px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'M PLUS Rounded 1c', sans-serif;
+  background: var(--surface);
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+/* ── HEADER ── */
+.site-header {
+  background: linear-gradient(135deg, #1E1E2E 0%, #2D1B4E 50%, #1A2E4A 100%);
+  padding: 28px 32px 24px;
+  position: sticky; top: 0; z-index: 100;
+  box-shadow: 0 4px 24px rgba(0,0,0,.3);
+}
+.header-inner { max-width: 1200px; margin: 0 auto; }
+.header-top { display: flex; align-items: center; gap: 14px; margin-bottom: 18px; }
+.logo {
+  width: 48px; height: 48px; border-radius: 14px;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 24px; flex-shrink: 0;
+}
+.site-title h1 { font-size: 20px; font-weight: 800; color: #fff; letter-spacing: -0.3px; }
+.site-title p  { font-size: 11px; color: rgba(255,255,255,.55); margin-top: 1px; }
+.header-badge {
+  margin-left: auto;
+  background: rgba(255,255,255,.1); color: rgba(255,255,255,.8);
+  border: 1px solid rgba(255,255,255,.15);
+  padding: 5px 12px; border-radius: 99px;
+  font-size: 11px; font-weight: 700;
+}
+
+/* Search bar */
+.search-wrap { position: relative; margin-bottom: 14px; }
+.search-wrap input {
+  width: 100%; padding: 12px 18px 12px 44px;
+  background: rgba(255,255,255,.1);
+  border: 1.5px solid rgba(255,255,255,.2);
+  border-radius: 12px; color: #fff;
+  font-family: 'M PLUS Rounded 1c', sans-serif;
+  font-size: 14px; outline: none;
+  transition: background .2s, border-color .2s;
+}
+.search-wrap input::placeholder { color: rgba(255,255,255,.4); }
+.search-wrap input:focus { background: rgba(255,255,255,.15); border-color: rgba(255,255,255,.4); }
+.search-icon {
+  position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+  font-size: 18px; pointer-events: none;
+}
+
+/* Category nav */
+.cat-nav { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; }
+.cat-nav::-webkit-scrollbar { display: none; }
+.cat-btn {
+  flex-shrink: 0;
+  display: flex; align-items: center; gap: 6px;
+  padding: 7px 14px; border-radius: 99px;
+  border: 1.5px solid rgba(255,255,255,.2);
+  background: transparent; color: rgba(255,255,255,.6);
+  font-family: 'M PLUS Rounded 1c', sans-serif;
+  font-size: 12px; font-weight: 700; cursor: pointer;
+  transition: all .15s;
+}
+.cat-btn:hover { background: rgba(255,255,255,.1); color: #fff; }
+.cat-btn.active { background: var(--primary); border-color: var(--primary); color: #fff; }
+.cat-btn .cnt {
+  background: rgba(255,255,255,.25); color: #fff;
+  padding: 1px 7px; border-radius: 99px; font-size: 10px;
+}
+.cat-btn.active .cnt { background: rgba(255,255,255,.3); }
+
+/* ── MAIN ── */
+.main { max-width: 1200px; margin: 0 auto; padding: 28px 24px; }
+
+/* Section header */
+.section-hdr {
+  display: flex; align-items: center; gap: 12px;
+  margin-bottom: 18px;
+}
+.section-hdr h2 {
+  font-size: 16px; font-weight: 800; color: var(--ink);
+  display: flex; align-items: center; gap: 8px;
+}
+.section-hdr .count {
+  font-size: 12px; color: var(--ink3); font-weight: 500;
+}
+.section-hdr .sort-wrap { margin-left: auto; }
+.section-hdr select {
+  padding: 6px 12px; border-radius: 8px;
+  border: 1.5px solid rgba(100,100,180,.15);
+  background: var(--white); color: var(--ink2);
+  font-family: 'M PLUS Rounded 1c', sans-serif;
+  font-size: 12px; font-weight: 700; cursor: pointer; outline: none;
+}
+
+/* Filter chips */
+.filter-row {
+  display: flex; flex-wrap: wrap; gap: 8px;
+  margin-bottom: 22px;
+}
+.chip {
+  padding: 6px 14px; border-radius: 99px;
+  border: 1.5px solid rgba(100,100,180,.15);
+  background: var(--white); color: var(--ink3);
+  font-size: 12px; font-weight: 700; cursor: pointer;
+  transition: all .15s;
+}
+.chip:hover { border-color: var(--primary); color: var(--primary); }
+.chip.active { background: var(--primary-lt); border-color: var(--primary); color: var(--primary-dk); }
+
+/* ── SHOP GRID ── */
+.shop-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 18px;
+}
+
+/* Shop card */
+.shop-card {
+  background: var(--white);
+  border-radius: var(--radius);
+  border: 1.5px solid rgba(100,100,180,.08);
+  overflow: hidden;
+  transition: transform .15s, box-shadow .15s;
+  cursor: default;
+}
+.shop-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 32px rgba(0,0,0,.1);
+}
+
+/* Card hero */
+.card-hero {
+  height: 80px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 36px;
+  position: relative; overflow: hidden;
+}
+.card-hero::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(to bottom, transparent 60%, rgba(0,0,0,.08));
+}
+
+/* Card body */
+.card-body { padding: 16px 18px 18px; }
+.card-top { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 10px; }
+.card-top h3 { font-size: 15px; font-weight: 800; color: var(--ink); flex: 1; line-height: 1.3; }
+.type-badge {
+  flex-shrink: 0;
+  padding: 3px 10px; border-radius: 99px;
+  font-size: 10px; font-weight: 700;
+  white-space: nowrap;
+}
+
+/* Rating row */
+.rating-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+.stars { display: flex; gap: 2px; }
+.star { font-size: 13px; }
+.star.filled { color: #FFB830; }
+.star.half   { color: #FFB830; opacity: .5; }
+.star.empty  { color: #D0D0E0; }
+.rating-val { font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 700; color: var(--ink); }
+.review-cnt { font-size: 11px; color: var(--ink3); }
+.source-badge {
+  margin-left: auto;
+  font-size: 9px; font-weight: 700; color: var(--ink3);
+  background: var(--surface); padding: 2px 7px; border-radius: 4px;
+}
+
+/* Address */
+.card-addr {
+  display: flex; align-items: flex-start; gap: 6px;
+  font-size: 11px; color: var(--ink3); margin-bottom: 8px;
+}
+.card-addr .icon { font-size: 12px; flex-shrink: 0; margin-top: 1px; }
+
+/* Features */
+.card-features {
+  font-size: 12px; color: var(--ink2); line-height: 1.7;
+  margin-bottom: 12px;
+  display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Tags */
+.tag-row { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 14px; }
+.tag {
+  padding: 3px 9px; border-radius: 6px;
+  font-size: 10px; font-weight: 700;
+  background: var(--surface); color: var(--ink3);
+}
+
+/* Card footer */
+.card-footer {
+  display: flex; gap: 8px;
+}
+.btn-map {
+  flex: 1; padding: 9px;
+  background: var(--primary-lt);
+  border: 1.5px solid rgba(232,69,26,.2);
+  border-radius: 8px; color: var(--primary-dk);
+  font-family: 'M PLUS Rounded 1c', sans-serif;
+  font-size: 12px; font-weight: 700; cursor: pointer;
+  text-decoration: none; display: flex; align-items: center;
+  justify-content: center; gap: 5px;
+  transition: background .15s;
+}
+.btn-map:hover { background: #ffddd5; }
+.btn-fav {
+  width: 38px; height: 38px;
+  background: var(--surface); border: 1.5px solid rgba(100,100,180,.12);
+  border-radius: 8px; display: flex; align-items: center; justify-content: center;
+  font-size: 16px; cursor: pointer; transition: background .15s;
+}
+.btn-fav:hover { background: #FFE4E4; }
+.btn-fav.saved { background: #FFE4E4; }
+
+/* No results */
+.no-results {
+  text-align: center; padding: 60px 20px; color: var(--ink3);
+  grid-column: 1 / -1;
+}
+.no-results .emoji { font-size: 48px; margin-bottom: 12px; }
+.no-results p { font-size: 14px; }
+
+/* Footer note */
+.data-note {
+  margin-top: 32px; padding: 14px 18px;
+  background: var(--white); border-radius: var(--radius-sm);
+  border: 1.5px solid rgba(100,100,180,.08);
+  font-size: 11px; color: var(--ink3); line-height: 1.8;
+}
+.data-note strong { color: var(--ink2); }
+
+/* Responsive */
+@media (max-width: 600px) {
+  .site-header { padding: 18px 16px 16px; }
+  .main { padding: 20px 16px; }
+  .shop-grid { grid-template-columns: 1fr; }
+  .header-badge { display: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- ── HEADER ── -->
+<header class="site-header">
+  <div class="header-inner">
+    <div class="header-top">
+      <div class="logo">🌟</div>
+      <div class="site-title">
+        <h1>上尾ポータル</h1>
+        <p>埼玉県上尾市 ／ 地元の評判店まとめサイト</p>
+      </div>
+      <div class="header-badge">β版 ラーメン特集</div>
+    </div>
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="searchInput" placeholder="店名・特徴・キーワードで検索..." oninput="filterShops()">
+    </div>
+    <nav class="cat-nav">
+      <button class="cat-btn active" onclick="selectCategory('ramen', this)">🍜 ラーメン <span class="cnt" id="cnt-ramen">8</span></button>
+      <button class="cat-btn" onclick="selectCategory('all', this)">🏠 準備中</button>
+    </nav>
+  </div>
+</header>
+
+<!-- ── MAIN ── -->
+<main class="main">
+  <div class="section-hdr">
+    <h2>🍜 上尾のラーメン</h2>
+    <span class="count" id="result-count">8件</span>
+    <div class="sort-wrap">
+      <select id="sortSelect" onchange="filterShops()">
+        <option value="rating">評価順</option>
+        <option value="review">口コミ数順</option>
+        <option value="name">店名順</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="filter-row" id="filterRow">
+    <button class="chip active" data-filter="all" onclick="setFilter('all', this)">すべて</button>
+    <button class="chip" data-filter="醤油" onclick="setFilter('醤油', this)">醤油</button>
+    <button class="chip" data-filter="塩" onclick="setFilter('塩', this)">塩</button>
+    <button class="chip" data-filter="味噌" onclick="setFilter('味噌', this)">味噌</button>
+    <button class="chip" data-filter="家系" onclick="setFilter('家系', this)">家系</button>
+    <button class="chip" data-filter="つけ麺" onclick="setFilter('つけ麺', this)">つけ麺</button>
+    <button class="chip" data-filter="街中華" onclick="setFilter('街中華', this)">街中華</button>
+    <button class="chip" data-filter="駅近" onclick="setFilter('駅近', this)">駅近</button>
+    <button class="chip" data-filter="駐車場" onclick="setFilter('駐車場', this)">駐車場あり</button>
+  </div>
+
+  <div class="shop-grid" id="shopGrid"></div>
+
+  <div class="data-note">
+    <strong>掲載情報について：</strong>
+    評価・口コミ数は食べログ・Retty・ラーメンデータベース等の公開情報を参考にしています。実際のGoogle Maps評価と異なる場合があります。
+    営業時間・定休日は変更になる場合があるため、来店前にお店へご確認ください。
+    掲載店舗は随時更新予定です。
+  </div>
+</main>
+
+<script>
+const SHOPS = [
+  {
+    id: 1,
+    name: '中華そば よしかわ 上尾店',
+    type: '醤油・煮干し',
+    typeBg: '#EBF4FF', typeColor: '#1A5FAC',
+    hero: '🍜', heroBg: 'linear-gradient(135deg, #EBF4FF, #d0e8ff)',
+    rating: 4.2,
+    reviews: 320,
+    source: '食べログ百名店',
+    address: '上尾市南97-5（北上尾駅近）',
+    features: '食べログ百名店に選出された人気店。澄んだ煮干し出汁の醤油スープが看板で、歯切れの良い自家製細麺との相性が抜群。シンプルな見た目に反してしっかりした煮干しの旨みが堪能できる。',
+    tags: ['煮干し', '醤油', '自家製麺', '百名店', '北上尾'],
+    filters: ['醤油'],
+    price: '800〜1,200円',
+    mapQuery: '中華そば+よしかわ+上尾店+埼玉',
+    hasParking: false,
+    nearStation: true,
+  },
+  {
+    id: 2,
+    name: '白河手打中華 賀乃屋',
+    type: '醤油・手打ち',
+    typeBg: '#FFF8E6', typeColor: '#9A6A00',
+    hero: '🥢', heroBg: 'linear-gradient(135deg, #FFF8E6, #ffe9b0)',
+    rating: 4.1,
+    reviews: 185,
+    source: 'Retty',
+    address: '上尾市春日1-35-13',
+    features: '白河ラーメンの伝統を受け継ぐ一軒。鶏ガラ・豚骨ベースのあっさりスープに、平打ちのコシある手打ち麺が特徴。素朴で飽きのこない味わいがリピーターを生む。',
+    tags: ['白河ラーメン', '手打ち麺', '醤油', '平打ち麺'],
+    filters: ['醤油'],
+    price: '700〜1,100円',
+    mapQuery: '白河手打中華+賀乃屋+上尾市',
+    hasParking: true,
+    nearStation: false,
+  },
+  {
+    id: 3,
+    name: '麺処 ろくめい',
+    type: '醤油・塩',
+    typeBg: '#E0FBF3', typeColor: '#007A5A',
+    hero: '🦐', heroBg: 'linear-gradient(135deg, #E0FBF3, #b0f0d8)',
+    rating: 4.1,
+    reviews: 240,
+    source: '食べログ',
+    address: '上尾市上尾村329-2（上尾駅西口）',
+    features: '弓削田醤油を使用した中華そばと、オマール海老を使った海老塩そばが看板メニュー。洗練された一杯が楽しめる上尾駅西口の人気店。定休日は木曜。',
+    tags: ['塩', '醤油', '海老塩', '上尾駅西口', '弓削田醤油'],
+    filters: ['醤油', '塩', '駅近'],
+    price: '900〜1,400円',
+    mapQuery: '麺処+ろくめい+上尾市',
+    hasParking: false,
+    nearStation: true,
+  },
+  {
+    id: 4,
+    name: '横浜ラーメン あばん',
+    type: '家系',
+    typeBg: '#FFF1ED', typeColor: '#A82F0E',
+    hero: '🍖', heroBg: 'linear-gradient(135deg, #FFF1ED, #ffd0c0)',
+    rating: 4.0,
+    reviews: 310,
+    source: 'Retty',
+    address: '上尾市本町2丁目（上尾駅徒歩3分）',
+    features: '創業から地元に愛され続ける本格横浜家系ラーメン。鶏ガラ・豚骨を長時間炊いた濃厚マイルドスープと特注太麺が自慢。独創的な岩のりラーメンが名物メニュー。',
+    tags: ['家系', '豚骨醤油', '太麺', '岩のり', '上尾駅近'],
+    filters: ['家系', '駅近'],
+    price: '800〜1,200円',
+    mapQuery: '横浜ラーメン+あばん+上尾市',
+    hasParking: false,
+    nearStation: true,
+  },
+  {
+    id: 5,
+    name: '麺処 慶',
+    type: 'つけ麺・味噌',
+    typeBg: '#F3EFFE', typeColor: '#5B34C2',
+    hero: '🍲', heroBg: 'linear-gradient(135deg, #F3EFFE, #ddd0ff)',
+    rating: 4.0,
+    reviews: 198,
+    source: 'ラーメンDB',
+    address: '上尾市小泉（上尾駅西口エリア）',
+    features: '辛みそつけ麺が看板メニュー。エビ出汁の効いた濃厚スープと太麺との相性が抜群で、ランチタイムは行列ができる人気店。ラーメンも提供しており選択肢が豊富。',
+    tags: ['つけ麺', '味噌', 'エビ出汁', '辛口', '太麺'],
+    filters: ['味噌', 'つけ麺', '駅近'],
+    price: '850〜1,300円',
+    mapQuery: '麺処+慶+上尾市',
+    hasParking: false,
+    nearStation: true,
+  },
+  {
+    id: 6,
+    name: '純米濃厚味噌ラーメン つむぎ',
+    type: '味噌',
+    typeBg: '#FFF8E6', typeColor: '#9A6A00',
+    hero: '🫕', heroBg: 'linear-gradient(135deg, #FFF8E6, #ffecc0)',
+    rating: 4.1,
+    reviews: 130,
+    source: 'まいぷれ',
+    address: '上尾市（北上尾エリア）',
+    features: '2023年12月オープンの新鋭味噌専門店。純米味噌を使った濃厚スープが特徴で、通常の味噌・九州豚骨味噌・焦がし麻辣味噌など多彩なバリエーションが楽しめる。',
+    tags: ['味噌', '専門店', '新店', '北上尾', '駐車場'],
+    filters: ['味噌', '駐車場'],
+    price: '750〜1,100円',
+    mapQuery: '純米濃厚味噌ラーメン+つむぎ+上尾市',
+    hasParking: true,
+    nearStation: false,
+  },
+  {
+    id: 7,
+    name: 'らーめん 新山（しんざん）',
+    type: '家系',
+    typeBg: '#FFF1ED', typeColor: '#A82F0E',
+    hero: '🔥', heroBg: 'linear-gradient(135deg, #FFF1ED, #ffc4a8)',
+    rating: 4.2,
+    reviews: 89,
+    source: 'さいたまっぷる',
+    address: '上尾市原市',
+    features: '家系の名店「狼煙」の創業者が手がける注目の新店。開店当初から行列が絶えない。豚骨醤油の濃厚なスープに太麺の組み合わせが絶品。今後の上尾ラーメン界を担う一店。',
+    tags: ['家系', '豚骨醤油', '新店', '話題', '駐車場'],
+    filters: ['家系', '駐車場'],
+    price: '850〜1,300円',
+    mapQuery: 'らーめん+新山+上尾市+原市',
+    hasParking: true,
+    nearStation: false,
+  },
+  {
+    id: 8,
+    name: '娘娘（にゃんにゃん）上尾井戸木店',
+    type: '街中華',
+    typeBg: '#FFFBEE', typeColor: '#8B6400',
+    hero: '🥟', heroBg: 'linear-gradient(135deg, #FFFBEE, #ffeea0)',
+    rating: 4.0,
+    reviews: 275,
+    source: 'Retty',
+    address: '上尾市井戸木',
+    features: '埼玉のソウルフードとして地元民に長く愛される街中華の老舗。スタミナメニューや餃子・チャーハンが充実。家族連れや学生に人気でリーズナブルな価格も魅力。',
+    tags: ['街中華', '餃子', 'チャーハン', '老舗', '家族向け', '駐車場'],
+    filters: ['街中華', '駐車場'],
+    price: '600〜1,000円',
+    mapQuery: '娘娘+上尾市+井戸木',
+    hasParking: true,
+    nearStation: false,
+  },
+];
+
+let currentFilter = 'all';
+let savedShops = new Set();
+
+function renderStars(rating) {
+  let html = '';
+  for (let i = 1; i <= 5; i++) {
+    if (rating >= i) html += '<span class="star filled">★</span>';
+    else if (rating >= i - 0.5) html += '<span class="star half">★</span>';
+    else html += '<span class="star empty">★</span>';
+  }
+  return html;
+}
+
+function buildMapUrl(query) {
+  return 'https://www.google.com/maps/search/' + encodeURIComponent(query);
+}
+
+function toggleFav(id, el) {
+  if (savedShops.has(id)) {
+    savedShops.delete(id);
+    el.classList.remove('saved');
+    el.textContent = '🤍';
+  } else {
+    savedShops.add(id);
+    el.classList.add('saved');
+    el.textContent = '❤️';
+  }
+}
+
+function setFilter(f, el) {
+  currentFilter = f;
+  document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  filterShops();
+}
+
+function selectCategory(cat, el) {
+  document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+}
+
+function filterShops() {
+  const q = document.getElementById('searchInput').value.toLowerCase();
+  const sort = document.getElementById('sortSelect').value;
+
+  let filtered = SHOPS.filter(s => {
+    const matchFilter = currentFilter === 'all'
+      || s.filters.includes(currentFilter)
+      || (currentFilter === '駐車場' && s.hasParking)
+      || (currentFilter === '駅近' && s.nearStation);
+    const matchSearch = !q || [s.name, s.features, s.type, s.address, ...s.tags]
+      .some(t => t.toLowerCase().includes(q));
+    return matchFilter && matchSearch;
+  });
+
+  if (sort === 'rating') filtered.sort((a, b) => b.rating - a.rating);
+  else if (sort === 'review') filtered.sort((a, b) => b.reviews - a.reviews);
+  else filtered.sort((a, b) => a.name.localeCompare(b.name, 'ja'));
+
+  renderCards(filtered);
+  document.getElementById('result-count').textContent = filtered.length + '件';
+  document.getElementById('cnt-ramen').textContent = filtered.length;
+}
+
+function renderCards(shops) {
+  const grid = document.getElementById('shopGrid');
+  if (shops.length === 0) {
+    grid.innerHTML = `<div class="no-results"><div class="emoji">🔍</div><p>該当するお店が見つかりませんでした</p></div>`;
+    return;
+  }
+  grid.innerHTML = shops.map(s => `
+    <div class="shop-card">
+      <div class="card-hero" style="background:${s.heroBg}">${s.hero}</div>
+      <div class="card-body">
+        <div class="card-top">
+          <h3>${s.name}</h3>
+          <span class="type-badge" style="background:${s.typeBg};color:${s.typeColor}">${s.type}</span>
+        </div>
+        <div class="rating-row">
+          <div class="stars">${renderStars(s.rating)}</div>
+          <span class="rating-val">${s.rating.toFixed(1)}</span>
+          <span class="review-cnt">（${s.reviews.toLocaleString()}件）</span>
+          <span class="source-badge">${s.source}</span>
+        </div>
+        <div class="card-addr">
+          <span class="icon">📍</span>
+          <span>${s.address}</span>
+        </div>
+        <div class="card-features">${s.features}</div>
+        <div class="tag-row">
+          ${s.tags.map(t => `<span class="tag">${t}</span>`).join('')}
+          ${s.hasParking ? '<span class="tag" style="background:#E0FBF3;color:#007A5A">🅿 駐車場</span>' : ''}
+          ${s.nearStation ? '<span class="tag" style="background:#EBF4FF;color:#1A5FAC">🚃 駅近</span>' : ''}
+          <span class="tag" style="background:#FFF8E6;color:#9A6A00">💴 ${s.price}</span>
+        </div>
+        <div class="card-footer">
+          <a class="btn-map" href="${buildMapUrl(s.mapQuery)}" target="_blank" rel="noopener">
+            🗺 Google Mapで見る
+          </a>
+          <button class="btn-fav" onclick="toggleFav(${s.id}, this)">🤍</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+// Initial render
+filterShops();
+</script>
+</body>
+</html>
