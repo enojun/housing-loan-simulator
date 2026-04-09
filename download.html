@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Android APK ダウンロード - 住宅ローンシミュレーター</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --mint: #00C896; --mint-lt: #E0FBF3; --mint-dk: #007A5A;
+  --coral: #FF6B6B; --coral-lt: #FFF0F0; --coral-dk: #C0392B;
+  --sky: #4DA6FF; --sky-lt: #EBF4FF; --sky-dk: #1A5FAC;
+  --sun: #FFB830; --sun-lt: #FFF8E6; --sun-dk: #9A6A00;
+  --lav: #A78BFA; --lav-lt: #F3EFFE; --lav-dk: #5B34C2;
+  --ink: #1E1E2E; --ink2: #3D3D55; --ink3: #6B6B8A;
+  --surface: #F7F6FD; --white: #FFFFFF;
+  --radius: 16px; --radius-sm: 10px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'M PLUS Rounded 1c', sans-serif;
+  background: var(--surface);
+  color: var(--ink);
+  font-size: 13px;
+  line-height: 1.6;
+  min-height: 100vh;
+}
+.app { padding: 28px; max-width: 720px; margin: 0 auto; }
+
+.hdr {
+  display: flex; align-items: center; gap: 16px;
+  margin-bottom: 28px;
+}
+.hdr-badge {
+  display: flex; align-items: center; justify-content: center;
+  width: 52px; height: 52px; border-radius: 18px;
+  background: linear-gradient(135deg, var(--mint) 0%, var(--sky) 100%);
+  font-size: 26px; flex-shrink: 0;
+}
+.hdr-text h1 { font-size: 22px; font-weight: 800; color: var(--ink); letter-spacing: -0.5px; }
+.hdr-text p { font-size: 12px; color: var(--ink3); margin-top: 2px; }
+
+.nav-links { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 24px; }
+.nav-links a {
+  background: var(--white); border: 1.5px solid rgba(100,100,180,0.1);
+  border-radius: 99px; padding: 5px 14px; font-size: 11px;
+  font-weight: 700; color: var(--ink3); text-decoration: none;
+  transition: all .15s;
+}
+.nav-links a:hover { border-color: var(--sky); color: var(--sky-dk); }
+.nav-links a.active {
+  background: var(--mint-lt); border-color: var(--mint); color: var(--mint-dk);
+}
+
+/* Hero download card */
+.dl-hero {
+  background: linear-gradient(135deg, var(--mint) 0%, var(--sky) 100%);
+  border-radius: var(--radius);
+  padding: 40px 32px;
+  text-align: center;
+  margin-bottom: 20px;
+  position: relative;
+  overflow: hidden;
+}
+.dl-hero::before {
+  content: '';
+  position: absolute; top: -40px; right: -40px;
+  width: 160px; height: 160px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 50%;
+}
+.dl-hero::after {
+  content: '';
+  position: absolute; bottom: -60px; left: -20px;
+  width: 200px; height: 200px;
+  background: rgba(255,255,255,0.06);
+  border-radius: 50%;
+}
+.dl-hero * { position: relative; z-index: 1; }
+.dl-icon { font-size: 56px; margin-bottom: 16px; }
+.dl-hero h2 {
+  font-size: 24px; font-weight: 800; color: #fff;
+  margin-bottom: 8px; letter-spacing: -0.5px;
+}
+.dl-hero .ver {
+  display: inline-block;
+  background: rgba(255,255,255,0.2); color: #fff;
+  padding: 4px 14px; border-radius: 99px;
+  font-size: 12px; font-weight: 700;
+  margin-bottom: 20px;
+}
+.dl-hero .desc {
+  font-size: 14px; color: rgba(255,255,255,0.9);
+  margin-bottom: 24px; line-height: 1.7;
+}
+.dl-btn {
+  display: inline-flex; align-items: center; gap: 10px;
+  background: #fff; color: var(--mint-dk);
+  padding: 14px 36px; border-radius: var(--radius-sm);
+  font-family: 'M PLUS Rounded 1c', sans-serif;
+  font-size: 16px; font-weight: 800;
+  text-decoration: none;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+  transition: transform .1s, box-shadow .15s;
+}
+.dl-btn:hover { box-shadow: 0 6px 28px rgba(0,0,0,0.2); transform: translateY(-1px); }
+.dl-btn:active { transform: scale(.98); }
+.dl-btn svg { width: 22px; height: 22px; }
+.dl-size { font-size: 11px; color: rgba(255,255,255,0.7); margin-top: 12px; }
+
+/* Info cards */
+.card {
+  background: var(--white);
+  border-radius: var(--radius);
+  padding: 20px;
+  border: 1.5px solid rgba(100,100,180,0.08);
+  margin-bottom: 16px;
+}
+.card-hdr {
+  display: flex; align-items: center; gap: 8px;
+  margin-bottom: 16px; padding-bottom: 12px;
+  border-bottom: 1.5px dashed rgba(100,100,180,0.12);
+}
+.card-hdr .icon {
+  width: 28px; height: 28px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; flex-shrink: 0;
+}
+.card-hdr h3 { font-size: 13px; font-weight: 700; color: var(--ink2); }
+
+.spec-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+}
+.spec-item {
+  background: var(--surface);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+}
+.spec-item .label { font-size: 10px; font-weight: 700; color: var(--ink3); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 4px; }
+.spec-item .value { font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 700; color: var(--ink); }
+
+.steps { counter-reset: step; }
+.step {
+  display: flex; gap: 14px; padding: 12px 0;
+  border-bottom: 1px solid rgba(100,100,180,.06);
+}
+.step:last-child { border-bottom: none; }
+.step::before {
+  counter-increment: step;
+  content: counter(step);
+  display: flex; align-items: center; justify-content: center;
+  width: 28px; height: 28px; flex-shrink: 0;
+  background: linear-gradient(135deg, var(--mint) 0%, var(--sky) 100%);
+  color: #fff; font-size: 13px; font-weight: 800;
+  border-radius: 50%;
+}
+.step-text { flex: 1; }
+.step-text strong { font-size: 13px; color: var(--ink); display: block; margin-bottom: 2px; }
+.step-text span { font-size: 12px; color: var(--ink3); }
+
+.note-box {
+  background: var(--sun-lt);
+  border: 1.5px solid rgba(255,184,48,.3);
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+  font-size: 12px; color: var(--sun-dk);
+  line-height: 1.7;
+}
+.note-box strong { color: var(--ink2); }
+
+.feature-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+.feature {
+  text-align: center; padding: 16px 10px;
+  background: var(--surface); border-radius: var(--radius-sm);
+}
+.feature .f-icon { font-size: 28px; margin-bottom: 8px; }
+.feature .f-title { font-size: 12px; font-weight: 700; color: var(--ink2); margin-bottom: 4px; }
+.feature .f-desc { font-size: 11px; color: var(--ink3); }
+
+@media (max-width: 600px) {
+  .app { padding: 16px; }
+  .dl-hero { padding: 28px 20px; }
+  .dl-hero h2 { font-size: 20px; }
+  .dl-btn { padding: 12px 28px; font-size: 14px; }
+  .spec-grid { grid-template-columns: 1fr; }
+  .feature-grid { grid-template-columns: 1fr; }
+  .hdr { flex-wrap: wrap; }
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <div class="hdr">
+    <div class="hdr-badge">📱</div>
+    <div class="hdr-text">
+      <h1>Android APK ダウンロード</h1>
+      <p>住宅ローンシミュレーターをスマートフォンで</p>
+    </div>
+  </div>
+
+  <div class="nav-links">
+    <a href="index.html">🏠 住宅ローン</a>
+    <a href="car_resale_simulator.html">🚗 車査定</a>
+    <a href="ageo_portal.html">🍜 上尾ポータル</a>
+    <a href="retirement_simulator.html">🌅 老後資金</a>
+    <a href="download.html" class="active">📱 APKダウンロード</a>
+  </div>
+
+  <!-- Hero Download -->
+  <div class="dl-hero">
+    <div class="dl-icon">🏠</div>
+    <h2>住宅ローンシミュレーター</h2>
+    <div class="ver">v1.0 for Android</div>
+    <div class="desc">借入条件・住宅ローン控除・変動金利を考慮した<br>年次詳細分析をスマートフォンで</div>
+    <a href="housing-loan-simulator.apk" class="dl-btn" download>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+        <polyline points="7 10 12 15 17 10"/>
+        <line x1="12" y1="15" x2="12" y2="3"/>
+      </svg>
+      APKをダウンロード
+    </a>
+    <div class="dl-size">ファイルサイズ: 約25KB</div>
+  </div>
+
+  <!-- App Features -->
+  <div class="card">
+    <div class="card-hdr">
+      <div class="icon" style="background:var(--mint-lt);">✨</div>
+      <h3>アプリの特徴</h3>
+    </div>
+    <div class="feature-grid">
+      <div class="feature">
+        <div class="f-icon">📊</div>
+        <div class="f-title">年次詳細分析</div>
+        <div class="f-desc">最大50年の返済シミュレーション</div>
+      </div>
+      <div class="feature">
+        <div class="f-icon">📈</div>
+        <div class="f-title">変動金利対応</div>
+        <div class="f-desc">5年毎の金利変動を個別設定</div>
+      </div>
+      <div class="feature">
+        <div class="f-icon">💰</div>
+        <div class="f-title">住宅ローン控除</div>
+        <div class="f-desc">控除額を含めた実質負担を計算</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Specs -->
+  <div class="card">
+    <div class="card-hdr">
+      <div class="icon" style="background:var(--sky-lt);">📋</div>
+      <h3>アプリ情報</h3>
+    </div>
+    <div class="spec-grid">
+      <div class="spec-item">
+        <div class="label">バージョン</div>
+        <div class="value">1.0</div>
+      </div>
+      <div class="spec-item">
+        <div class="label">ファイルサイズ</div>
+        <div class="value">25 KB</div>
+      </div>
+      <div class="spec-item">
+        <div class="label">対応OS</div>
+        <div class="value">Android 7.0+</div>
+      </div>
+      <div class="spec-item">
+        <div class="label">対応SDK</div>
+        <div class="value">API 24 ~ 34</div>
+      </div>
+      <div class="spec-item">
+        <div class="label">パッケージ名</div>
+        <div class="value">com.enojun.housingloan</div>
+      </div>
+      <div class="spec-item">
+        <div class="label">最終更新</div>
+        <div class="value">2026-04-09</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Install Steps -->
+  <div class="card">
+    <div class="card-hdr">
+      <div class="icon" style="background:var(--lav-lt);">📲</div>
+      <h3>インストール手順</h3>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-text">
+          <strong>APKファイルをダウンロード</strong>
+          <span>上のダウンロードボタンをタップ</span>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-text">
+          <strong>ダウンロード完了通知をタップ</strong>
+          <span>通知バーまたはファイルマネージャーから開く</span>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-text">
+          <strong>「不明なアプリのインストール」を許可</strong>
+          <span>初回のみ: 設定 → セキュリティ → 提供元不明のアプリを許可</span>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-text">
+          <strong>インストールをタップ</strong>
+          <span>インストール完了後、ホーム画面にアイコンが追加されます</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Note -->
+  <div class="card">
+    <div class="note-box">
+      <strong>⚠️ ご注意:</strong> このAPKはGoogle Playストアを経由しないサイドローディングです。
+      インストール時にセキュリティ警告が表示される場合がありますが、自己署名のデバッグ証明書を使用しているためです。
+      ソースコードは<a href="https://github.com/enojun/housing-loan-simulator" style="color:var(--sky-dk);font-weight:700;">GitHub</a>で公開されています。
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
