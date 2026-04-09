@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>老後資金シミュレーター</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --mint: #00C896; --mint-lt: #E0FBF3; --mint-dk: #007A5A;
+  --coral: #FF6B6B; --coral-lt: #FFF0F0; --coral-dk: #C0392B;
+  --sky: #4DA6FF; --sky-lt: #EBF4FF; --sky-dk: #1A5FAC;
+  --sun: #FFB830; --sun-lt: #FFF8E6; --sun-dk: #9A6A00;
+  --lav: #A78BFA; --lav-lt: #F3EFFE; --lav-dk: #5B34C2;
+  --ink: #1E1E2E; --ink2: #3D3D55; --ink3: #6B6B8A;
+  --surface: #F7F6FD; --white: #FFFFFF;
+  --radius: 16px; --radius-sm: 10px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'M PLUS Rounded 1c', sans-serif;
+  background: var(--surface);
+  color: var(--ink);
+  font-size: 13px;
+  line-height: 1.6;
+}
+.app { padding: 28px; max-width: 1440px; margin: 0 auto; }
+
+/* Header */
+.hdr {
+  display: flex; align-items: center; gap: 16px;
+  margin-bottom: 28px;
+}
+.hdr-badge {
+  display: flex; align-items: center; justify-content: center;
+  width: 52px; height: 52px; border-radius: 18px;
+  background: linear-gradient(135deg, var(--sun) 0%, var(--coral) 100%);
+  font-size: 26px; flex-shrink: 0;
+}
+.hdr-text h1 { font-size: 22px; font-weight: 800; color: var(--ink); letter-spacing: -0.5px; }
+.hdr-text p { font-size: 12px; color: var(--ink3); margin-top: 2px; }
+.hdr-pill {
+  margin-left: auto;
+  background: var(--sun-lt); color: var(--sun-dk);
+  padding: 6px 14px; border-radius: 99px;
+  font-size: 11px; font-weight: 700; letter-spacing: .3px;
+}
+
+/* Layout */
+.layout { display: grid; grid-template-columns: 320px 1fr; gap: 20px; align-items: start; }
+
+/* Card base */
+.card {
+  background: var(--white);
+  border-radius: var(--radius);
+  padding: 20px;
+  border: 1.5px solid rgba(100,100,180,0.08);
+  margin-bottom: 16px;
+}
+.card:last-child { margin-bottom: 0; }
+
+/* Card header strip */
+.card-hdr {
+  display: flex; align-items: center; gap: 8px;
+  margin-bottom: 16px; padding-bottom: 12px;
+  border-bottom: 1.5px dashed rgba(100,100,180,0.12);
+}
+.card-hdr .icon {
+  width: 28px; height: 28px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; flex-shrink: 0;
+}
+.card-hdr h2 { font-size: 12px; font-weight: 700; color: var(--ink2); letter-spacing: .6px; text-transform: uppercase; }
+
+/* Section label */
+.sec {
+  font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+  color: var(--ink3); margin: 14px 0 8px;
+  display: flex; align-items: center; gap: 6px;
+}
+.sec::after { content:''; flex:1; height:1px; background: rgba(100,100,180,0.1); }
+.sec:first-child { margin-top: 0; }
+
+/* Input groups */
+.ig { margin-bottom: 10px; }
+.ig label { display: block; font-size: 11px; font-weight: 700; color: var(--ink3); margin-bottom: 4px; }
+.ig-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.ig input {
+  width: 100%;
+  background: var(--surface);
+  border: 1.5px solid rgba(100,100,180,0.12);
+  border-radius: var(--radius-sm);
+  padding: 9px 12px;
+  color: var(--ink);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px; font-weight: 500;
+  outline: none;
+  transition: border-color .15s, box-shadow .15s;
+}
+.ig input:focus { border-color: var(--sky); box-shadow: 0 0 0 3px rgba(77,166,255,.15); }
+.ig.g input:focus { border-color: var(--mint); box-shadow: 0 0 0 3px rgba(0,200,150,.15); }
+.ig.g label { color: var(--mint-dk); }
+
+/* Rate items */
+.rate-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.rate-item {
+  background: var(--sun-lt);
+  border: 1.5px solid rgba(255,184,48,.2);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+}
+.rate-item label { display: block; font-size: 10px; font-weight: 700; color: var(--sun-dk); margin-bottom: 6px; line-height: 1.4; }
+.rate-item input {
+  width: 100%; background: transparent; border: none;
+  border-bottom: 2px solid rgba(255,184,48,.4);
+  border-radius: 0; padding: 3px 0;
+  color: var(--ink); font-family: 'JetBrains Mono', monospace;
+  font-size: 15px; font-weight: 700; outline: none;
+  transition: border-color .15s;
+}
+.rate-item input:focus { border-bottom-color: var(--sun); }
+.rate-note { font-size: 10px; color: var(--ink3); margin-bottom: 10px; line-height: 1.6; }
+
+/* Calc button */
+.calc-btn {
+  width: 100%; margin-top: 16px; padding: 13px;
+  background: linear-gradient(135deg, var(--sun) 0%, var(--coral) 100%);
+  border: none; border-radius: var(--radius-sm);
+  color: #fff; font-family: 'M PLUS Rounded 1c', sans-serif;
+  font-size: 14px; font-weight: 800; cursor: pointer;
+  letter-spacing: .3px;
+  box-shadow: 0 4px 16px rgba(255,184,48,.35);
+  transition: transform .1s, box-shadow .15s;
+}
+.calc-btn:hover { box-shadow: 0 6px 20px rgba(255,184,48,.45); }
+.calc-btn:active { transform: scale(.98); }
+
+/* Summary pills row */
+.summary-row {
+  display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px;
+  margin-bottom: 16px;
+}
+.s-pill {
+  background: var(--white);
+  border-radius: var(--radius);
+  padding: 14px 12px;
+  text-align: center;
+  border: 1.5px solid rgba(100,100,180,0.08);
+}
+.s-pill .s-label { font-size: 10px; font-weight: 700; color: var(--ink3); letter-spacing: .5px; margin-bottom: 6px; }
+.s-pill .s-val {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 17px; font-weight: 700; color: var(--ink);
+  letter-spacing: -0.5px;
+}
+.s-pill .s-unit { font-size: 10px; font-weight: 500; color: var(--ink3); margin-top: 2px; }
+.s-pill.good { border-color: var(--mint); background: var(--mint-lt); }
+.s-pill.good .s-val { color: var(--mint-dk); }
+.s-pill.bad { border-color: var(--coral); background: var(--coral-lt); }
+.s-pill.bad .s-val { color: var(--coral-dk); }
+.s-pill.warn { border-color: var(--sun); background: var(--sun-lt); }
+.s-pill.warn .s-val { color: var(--sun-dk); }
+.s-pill.sky { border-color: var(--sky); background: var(--sky-lt); }
+.s-pill.sky .s-val { color: var(--sky-dk); }
+
+/* Chart area */
+.chart-wrap { position: relative; height: 260px; margin-bottom: 8px; }
+canvas { display: block; width: 100% !important; }
+
+/* Legend */
+.legend { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 16px; }
+.legend-item { display: flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 700; color: var(--ink3); }
+.legend-dot { width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0; }
+
+/* Progress bar */
+.progress-wrap { margin-bottom: 16px; }
+.progress-label {
+  display: flex; justify-content: space-between;
+  font-size: 11px; font-weight: 700; color: var(--ink3);
+  margin-bottom: 6px;
+}
+.progress-bar {
+  height: 10px; border-radius: 99px;
+  background: rgba(100,100,180,0.1);
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%; border-radius: 99px;
+  background: linear-gradient(90deg, var(--sun) 0%, var(--mint) 100%);
+  transition: width 0.6s ease;
+}
+
+/* Table */
+.tbl-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 12px; }
+thead th {
+  background: var(--surface);
+  padding: 8px 10px;
+  text-align: right;
+  font-size: 10px; font-weight: 700; letter-spacing: .5px;
+  color: var(--ink3); border-bottom: 1.5px solid rgba(100,100,180,0.1);
+  white-space: nowrap;
+}
+thead th:first-child { text-align: center; }
+tbody tr:hover { background: rgba(100,100,180,0.03); }
+tbody td {
+  padding: 7px 10px; text-align: right;
+  border-bottom: 1px solid rgba(100,100,180,0.07);
+  font-family: 'JetBrains Mono', monospace; font-size: 12px;
+}
+tbody td:first-child {
+  text-align: center; font-family: 'M PLUS Rounded 1c', sans-serif;
+  font-weight: 700; font-size: 12px; color: var(--ink2);
+}
+.tbl-retire { background: rgba(255,184,48,.07) !important; }
+.tbl-goal { background: rgba(0,200,150,.07) !important; }
+.tbl-neg td { color: var(--coral-dk) !important; }
+.tbl-retire td:first-child::after { content: ' 退職'; font-size: 9px; color: var(--sun-dk); }
+
+/* Phase badge */
+.phase-badge {
+  display: inline-block; padding: 2px 8px; border-radius: 99px;
+  font-size: 9px; font-weight: 700; letter-spacing: .3px;
+}
+.phase-save { background: var(--sky-lt); color: var(--sky-dk); }
+.phase-draw { background: var(--coral-lt); color: var(--coral-dk); }
+
+/* Alert box */
+.alert {
+  border-radius: var(--radius-sm);
+  padding: 12px 14px; margin-bottom: 16px;
+  font-size: 12px; font-weight: 500; line-height: 1.6;
+  display: flex; gap: 8px; align-items: flex-start;
+}
+.alert-icon { font-size: 16px; flex-shrink: 0; }
+.alert.ok { background: var(--mint-lt); border: 1px solid var(--mint); color: var(--mint-dk); }
+.alert.ng { background: var(--coral-lt); border: 1px solid var(--coral); color: var(--coral-dk); }
+.alert.warn { background: var(--sun-lt); border: 1px solid var(--sun); color: var(--sun-dk); }
+
+/* Nav */
+.nav-links {
+  display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px;
+}
+.nav-link {
+  background: var(--white); border: 1.5px solid rgba(100,100,180,0.1);
+  border-radius: 99px; padding: 5px 14px;
+  font-size: 11px; font-weight: 700; color: var(--ink3);
+  text-decoration: none; transition: all .15s;
+}
+.nav-link:hover { border-color: var(--sun); color: var(--sun-dk); }
+.nav-link.active { background: var(--sun-lt); border-color: var(--sun); color: var(--sun-dk); }
+
+@media (max-width: 900px) {
+  .layout { grid-template-columns: 1fr; }
+  .summary-row { grid-template-columns: repeat(3, 1fr); }
+  .summary-row .s-pill:nth-child(n+4) { display: none; }
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <div class="hdr">
+    <div class="hdr-badge">🌅</div>
+    <div class="hdr-text">
+      <h1>老後資金シミュレーター</h1>
+      <p>積立・退職・取り崩しを一括で可視化するライフプランツール</p>
+    </div>
+    <div class="hdr-pill">老後対策</div>
+  </div>
+
+  <div class="nav-links">
+    <a href="index.html" class="nav-link">🏠 住宅ローン</a>
+    <a href="car_resale_simulator.html" class="nav-link">🚗 車査定</a>
+    <a href="ageo_portal.html" class="nav-link">🍜 上尾ポータル</a>
+    <a href="retirement_simulator.html" class="nav-link active">🌅 老後資金</a>
+  </div>
+
+  <div class="layout">
+
+    <!-- LEFT: Input panel -->
+    <div>
+
+      <!-- 基本情報 -->
+      <div class="card">
+        <div class="card-hdr">
+          <div class="icon" style="background:var(--sky-lt)">👤</div>
+          <h2>基本情報</h2>
+        </div>
+
+        <div class="sec">年齢設定</div>
+        <div class="ig-row">
+          <div class="ig">
+            <label>現在の年齢</label>
+            <input type="number" id="currentAge" value="35" min="20" max="70">
+          </div>
+          <div class="ig">
+            <label>退職年齢</label>
+            <input type="number" id="retireAge" value="65" min="50" max="80">
+          </div>
+        </div>
+        <div class="ig">
+          <label>想定寿命（年齢）</label>
+          <input type="number" id="lifeExpect" value="90" min="70" max="100">
+        </div>
+
+        <div class="sec">現在の資産</div>
+        <div class="ig">
+          <label>現在の貯蓄額（万円）</label>
+          <input type="number" id="currentSaving" value="300" min="0">
+        </div>
+      </div>
+
+      <!-- 積立計画 -->
+      <div class="card">
+        <div class="card-hdr">
+          <div class="icon" style="background:var(--mint-lt)">💰</div>
+          <h2>積立計画</h2>
+        </div>
+
+        <div class="sec">毎月の積立</div>
+        <div class="ig">
+          <label>毎月の積立額（万円）</label>
+          <input type="number" id="monthlySave" value="5" min="0" step="0.5">
+        </div>
+
+        <div class="sec">運用・リターン設定</div>
+        <div class="rate-note">※ インデックス投資の長期期待リターンの目安：4〜7%</div>
+        <div class="rate-grid">
+          <div class="rate-item">
+            <label>積立期間の年率リターン</label>
+            <input type="number" id="returnRate" value="5" step="0.1" min="0" max="15">
+            <span style="font-size:10px;color:var(--sun-dk)">% / 年</span>
+          </div>
+          <div class="rate-item">
+            <label>取り崩し期間の年率リターン</label>
+            <input type="number" id="drawRate" value="3" step="0.1" min="0" max="10">
+            <span style="font-size:10px;color:var(--sun-dk)">% / 年</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 退職後の生活費 -->
+      <div class="card">
+        <div class="card-hdr">
+          <div class="icon" style="background:var(--coral-lt)">🏡</div>
+          <h2>退職後の生活設計</h2>
+        </div>
+
+        <div class="sec">月間収支</div>
+        <div class="ig">
+          <label>退職後の月間生活費（万円）</label>
+          <input type="number" id="monthlyExpense" value="25" min="10" step="0.5">
+        </div>
+        <div class="ig">
+          <label>公的年金の月額受給（万円）</label>
+          <input type="number" id="monthlyPension" value="15" min="0" step="0.5">
+        </div>
+        <div class="ig">
+          <label>退職金・一時受取（万円）</label>
+          <input type="number" id="retireBonus" value="500" min="0">
+        </div>
+
+        <button class="calc-btn" onclick="calc()">📊 シミュレーション実行</button>
+      </div>
+
+    </div>
+
+    <!-- RIGHT: Output panel -->
+    <div id="result" style="display:none">
+
+      <!-- Summary -->
+      <div class="summary-row">
+        <div class="s-pill sky" id="pill-target">
+          <div class="s-label">必要老後資金</div>
+          <div class="s-val" id="sv-target">—</div>
+          <div class="s-unit">万円</div>
+        </div>
+        <div class="s-pill" id="pill-asset">
+          <div class="s-label">退職時の資産</div>
+          <div class="s-val" id="sv-asset">—</div>
+          <div class="s-unit">万円</div>
+        </div>
+        <div class="s-pill" id="pill-diff">
+          <div class="s-label">過不足</div>
+          <div class="s-val" id="sv-diff">—</div>
+          <div class="s-unit">万円</div>
+        </div>
+        <div class="s-pill" id="pill-rate">
+          <div class="s-label">目標達成率</div>
+          <div class="s-val" id="sv-rate">—</div>
+          <div class="s-unit">%</div>
+        </div>
+        <div class="s-pill" id="pill-income">
+          <div class="s-label">積立年数</div>
+          <div class="s-val" id="sv-years">—</div>
+          <div class="s-unit">年</div>
+        </div>
+      </div>
+
+      <!-- Alert -->
+      <div id="alert-box"></div>
+
+      <!-- Progress -->
+      <div class="card" style="padding:16px 20px">
+        <div class="progress-wrap">
+          <div class="progress-label">
+            <span>目標達成率</span>
+            <span id="progress-pct">0%</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" id="progress-fill" style="width:0%"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Chart -->
+      <div class="card">
+        <div class="card-hdr">
+          <div class="icon" style="background:var(--sun-lt)">📈</div>
+          <h2>資産推移グラフ</h2>
+        </div>
+        <div class="legend">
+          <div class="legend-item"><div class="legend-dot" style="background:var(--sky)"></div>資産残高</div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--mint)"></div>積立元本（累計）</div>
+          <div class="legend-item"><div class="legend-dot" style="background:rgba(255,184,48,0.4); border:1px dashed var(--sun-dk)"></div>退職ライン</div>
+        </div>
+        <div class="chart-wrap">
+          <canvas id="chart"></canvas>
+        </div>
+        <div style="font-size:10px;color:var(--ink3);text-align:right;margin-top:4px">
+          縦軸：資産残高（万円）　横軸：年齢
+        </div>
+      </div>
+
+      <!-- Table -->
+      <div class="card">
+        <div class="card-hdr">
+          <div class="icon" style="background:var(--lav-lt)">📋</div>
+          <h2>年齢別・資産推移テーブル</h2>
+        </div>
+        <div class="tbl-wrap">
+          <table id="result-table">
+            <thead>
+              <tr>
+                <th>年齢</th>
+                <th>フェーズ</th>
+                <th>当年積立／取崩</th>
+                <th>累計元本</th>
+                <th>運用益（累計）</th>
+                <th>資産残高</th>
+              </tr>
+            </thead>
+            <tbody id="tbl-body"></tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+// ---------- helpers ----------
+const fmt = (n, d=0) => {
+  if (!isFinite(n)) return '—';
+  return Math.abs(n) >= 10000
+    ? (n/10000).toFixed(1) + '億'
+    : n.toFixed(d).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+};
+const fmtSign = n => (n >= 0 ? '+' : '') + fmt(n);
+const v = id => parseFloat(document.getElementById(id).value) || 0;
+
+// ---------- main calc ----------
+function calc() {
+  const curAge      = Math.round(v('currentAge'));
+  const retireAge   = Math.round(v('retireAge'));
+  const lifeAge     = Math.round(v('lifeExpect'));
+  const initSaving  = v('currentSaving');
+  const monthlySave = v('monthlySave');
+  const returnRate  = v('returnRate') / 100;
+  const drawRate    = v('drawRate') / 100;
+  const monthlyExp  = v('monthlyExpense');
+  const pension     = v('monthlyPension');
+  const retireBonus = v('retireBonus');
+
+  if (retireAge <= curAge || lifeAge <= retireAge) {
+    alert('年齢の設定を確認してください（退職年齢 > 現在年齢、想定寿命 > 退職年齢）');
+    return;
+  }
+
+  const savingYears = retireAge - curAge;
+  const drawYears   = lifeAge - retireAge;
+  const netMonthly  = monthlyExp - pension; // 年金引後の月間不足額
+
+  // ---- 退職時資産計算（年複利）
+  let asset = initSaving;
+  const r = returnRate;
+  // 毎年: 年末に積立 × 12 加算、元本に年率リターン
+  const rows = [];
+  let cumPrincipal = initSaving;
+
+  for (let yr = 0; yr < savingYears; yr++) {
+    const age = curAge + yr;
+    const annualSave = monthlySave * 12;
+    asset = asset * (1 + r) + annualSave;
+    cumPrincipal += annualSave;
+    rows.push({
+      age, phase: 'save',
+      flow: annualSave,
+      cumPrincipal,
+      gain: asset - cumPrincipal,
+      balance: asset
+    });
+  }
+
+  asset += retireBonus;
+  cumPrincipal += retireBonus;
+  const assetAtRetire = asset;
+
+  // ---- 必要老後資金計算（現在価値ベース・年金ありで差額分）
+  // 毎年の不足額を取り崩す場合の必要額（年率リターン考慮）
+  const dr = drawRate;
+  const annualShortfall = netMonthly * 12;
+  let needed = 0;
+  if (dr === 0) {
+    needed = annualShortfall * drawYears;
+  } else {
+    // PV of annuity
+    needed = annualShortfall * (1 - Math.pow(1 + dr, -drawYears)) / dr;
+  }
+  // needsは退職時点での必要残高
+
+  // ---- 取り崩しフェーズシミュレーション
+  let drawAsset = asset;
+  let drawCumPrincipal = cumPrincipal;
+  for (let yr = 0; yr < drawYears; yr++) {
+    const age = retireAge + yr;
+    const annualDraw = annualShortfall;
+    drawAsset = drawAsset * (1 + dr) - annualDraw;
+    drawCumPrincipal -= annualDraw;
+    rows.push({
+      age, phase: 'draw',
+      flow: -annualShortfall,
+      cumPrincipal: drawCumPrincipal,
+      gain: drawAsset - drawCumPrincipal,
+      balance: drawAsset
+    });
+  }
+
+  const diff = assetAtRetire - needed;
+  const rate = needed > 0 ? Math.min((assetAtRetire / needed) * 100, 200) : 100;
+
+  // ---- DOM update ----
+  document.getElementById('result').style.display = '';
+
+  document.getElementById('sv-target').textContent = fmt(needed);
+  document.getElementById('sv-asset').textContent  = fmt(assetAtRetire);
+  document.getElementById('sv-diff').textContent   = fmtSign(diff);
+  document.getElementById('sv-rate').textContent   = rate.toFixed(1);
+  document.getElementById('sv-years').textContent  = savingYears;
+
+  // pill colors
+  const pillDiff = document.getElementById('pill-diff');
+  pillDiff.className = 's-pill ' + (diff >= 0 ? 'good' : 'bad');
+  const pillRate = document.getElementById('pill-rate');
+  pillRate.className = 's-pill ' + (rate >= 100 ? 'good' : rate >= 80 ? 'warn' : 'bad');
+
+  // progress
+  const pct = Math.min(rate, 100);
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('progress-pct').textContent = rate.toFixed(1) + '%';
+
+  // alert
+  const alertEl = document.getElementById('alert-box');
+  if (diff >= 0) {
+    alertEl.innerHTML = `<div class="alert ok"><span class="alert-icon">✅</span><div>退職時の資産 <strong>${fmt(assetAtRetire)}万円</strong> は、必要老後資金 <strong>${fmt(needed)}万円</strong> を <strong>${fmt(diff)}万円</strong> 上回る見込みです。このまま計画を継続しましょう。</div></div>`;
+  } else {
+    const short = Math.abs(diff);
+    const addSave = (needed - assetAtRetire) / (savingYears * 12 * ((Math.pow(1+r, savingYears)-1)/r || savingYears));
+    alertEl.innerHTML = `<div class="alert ng"><span class="alert-icon">⚠️</span><div>退職時の資産が <strong>${fmt(short)}万円</strong> 不足する見込みです。毎月の積立を約 <strong>${fmt(addSave, 1)}万円</strong> 増やすか、退職年齢・生活費を見直してください。</div></div>`;
+  }
+
+  // table
+  const tbody = document.getElementById('tbl-body');
+  tbody.innerHTML = rows.map(r => {
+    const isRetire = r.age === retireAge;
+    const isNeg = r.balance < 0;
+    let cls = '';
+    if (isRetire) cls = 'tbl-retire';
+    if (isNeg) cls = 'tbl-neg';
+    return `<tr class="${cls}">
+      <td>${r.age}歳</td>
+      <td><span class="phase-badge ${r.phase==='save'?'phase-save':'phase-draw'}">${r.phase==='save'?'積立':'取崩'}</span></td>
+      <td style="color:${r.flow>=0?'var(--sky-dk)':'var(--coral-dk)'}">${fmtSign(Math.round(r.flow))} 万円</td>
+      <td>${fmt(Math.round(r.cumPrincipal))} 万円</td>
+      <td style="color:${r.gain>=0?'var(--mint-dk)':'var(--coral-dk)'}">${fmtSign(Math.round(r.gain))} 万円</td>
+      <td><strong>${fmt(Math.round(r.balance))} 万円</strong></td>
+    </tr>`;
+  }).join('');
+
+  // chart
+  drawChart(rows, curAge, retireAge, lifeAge);
+}
+
+// ---------- canvas chart ----------
+function drawChart(rows, curAge, retireAge, lifeAge) {
+  const canvas = document.getElementById('chart');
+  const wrap   = canvas.parentElement;
+  canvas.width  = wrap.clientWidth * devicePixelRatio;
+  canvas.height = 260 * devicePixelRatio;
+  canvas.style.height = '260px';
+  const ctx = canvas.getContext('2d');
+  ctx.scale(devicePixelRatio, devicePixelRatio);
+  const W = wrap.clientWidth, H = 260;
+
+  const PAD = { top: 16, right: 20, bottom: 36, left: 64 };
+  const cW = W - PAD.left - PAD.right;
+  const cH = H - PAD.top - PAD.bottom;
+
+  const balances = rows.map(r => r.balance);
+  const principals = rows.map(r => r.cumPrincipal);
+  const ages = rows.map(r => r.age);
+  const maxVal = Math.max(...balances, ...principals, 100);
+  const minVal = Math.min(...balances, 0);
+  const valRange = maxVal - minVal || 1;
+
+  const xOf = i => PAD.left + (i / (rows.length - 1)) * cW;
+  const yOf = v => PAD.top + cH - ((v - minVal) / valRange) * cH;
+
+  // bg
+  ctx.clearRect(0, 0, W, H);
+
+  // grid lines
+  ctx.strokeStyle = 'rgba(100,100,180,0.07)';
+  ctx.lineWidth = 1;
+  for (let i = 0; i <= 4; i++) {
+    const y = PAD.top + (cH / 4) * i;
+    ctx.beginPath(); ctx.moveTo(PAD.left, y); ctx.lineTo(W - PAD.right, y); ctx.stroke();
+    const val = maxVal - (valRange / 4) * i + minVal;
+    ctx.fillStyle = 'rgba(100,100,180,0.5)';
+    ctx.font = '10px JetBrains Mono, monospace';
+    ctx.textAlign = 'right';
+    ctx.fillText(Math.round(val).toLocaleString(), PAD.left - 6, y + 4);
+  }
+
+  // retire vertical line
+  const retireIdx = rows.findIndex(r => r.age === retireAge);
+  if (retireIdx >= 0) {
+    const rx = xOf(retireIdx);
+    ctx.strokeStyle = 'rgba(255,184,48,0.5)';
+    ctx.lineWidth = 1.5;
+    ctx.setLineDash([4, 3]);
+    ctx.beginPath(); ctx.moveTo(rx, PAD.top); ctx.lineTo(rx, H - PAD.bottom); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = 'rgba(255,184,48,0.8)';
+    ctx.font = 'bold 10px M PLUS Rounded 1c, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('退職', rx, PAD.top + 10);
+  }
+
+  // principal area fill
+  ctx.beginPath();
+  ctx.moveTo(xOf(0), yOf(principals[0]));
+  principals.forEach((p, i) => ctx.lineTo(xOf(i), yOf(p)));
+  ctx.lineTo(xOf(rows.length-1), yOf(minVal));
+  ctx.lineTo(xOf(0), yOf(minVal));
+  ctx.closePath();
+  ctx.fillStyle = 'rgba(0,200,150,0.08)';
+  ctx.fill();
+
+  // principal line
+  ctx.beginPath();
+  principals.forEach((p, i) => i === 0 ? ctx.moveTo(xOf(i), yOf(p)) : ctx.lineTo(xOf(i), yOf(p)));
+  ctx.strokeStyle = 'rgba(0,200,150,0.5)';
+  ctx.lineWidth = 1.5;
+  ctx.setLineDash([3, 3]);
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  // balance area fill (gradient)
+  const grad = ctx.createLinearGradient(0, PAD.top, 0, H - PAD.bottom);
+  grad.addColorStop(0, 'rgba(77,166,255,0.25)');
+  grad.addColorStop(1, 'rgba(77,166,255,0.03)');
+  ctx.beginPath();
+  ctx.moveTo(xOf(0), yOf(balances[0]));
+  balances.forEach((b, i) => ctx.lineTo(xOf(i), yOf(b)));
+  ctx.lineTo(xOf(rows.length-1), yOf(Math.max(minVal, 0)));
+  ctx.lineTo(xOf(0), yOf(Math.max(minVal, 0)));
+  ctx.closePath();
+  ctx.fillStyle = grad;
+  ctx.fill();
+
+  // balance line
+  ctx.beginPath();
+  balances.forEach((b, i) => i === 0 ? ctx.moveTo(xOf(i), yOf(b)) : ctx.lineTo(xOf(i), yOf(b)));
+  ctx.strokeStyle = 'var(--sky)';
+  ctx.lineWidth = 2.5;
+  ctx.stroke();
+
+  // x-axis labels
+  ctx.fillStyle = 'rgba(100,100,180,0.6)';
+  ctx.font = '10px M PLUS Rounded 1c, sans-serif';
+  ctx.textAlign = 'center';
+  ages.forEach((age, i) => {
+    if (i % 5 === 0 || age === retireAge) {
+      ctx.fillText(age + '歳', xOf(i), H - PAD.bottom + 14);
+    }
+  });
+}
+
+// Run on load
+window.addEventListener('DOMContentLoaded', calc);
+window.addEventListener('resize', () => {
+  const rows = collectRows();
+  if (rows) {
+    const curAge  = Math.round(v('currentAge'));
+    const retireAge = Math.round(v('retireAge'));
+    const lifeAge   = Math.round(v('lifeExpect'));
+    drawChart(rows, curAge, retireAge, lifeAge);
+  }
+});
+
+// collect rows cache for resize
+let _lastRows = null, _lastCurAge, _lastRetireAge, _lastLifeAge;
+const origCalc = calc;
+function collectRows() { return _lastRows; }
+</script>
+</body>
+</html>
