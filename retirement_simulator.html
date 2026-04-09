@@ -5,23 +5,18 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>老後資金シミュレーター</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 :root {
-  --mint: #00C896; --mint-lt: #E0FBF3; --mint-dk: #007A5A;
-  --coral: #FF6B6B; --coral-lt: #FFF0F0; --coral-dk: #C0392B;
-  --sky: #4DA6FF; --sky-lt: #EBF4FF; --sky-dk: #1A5FAC;
-  --sun: #FFB830; --sun-lt: #FFF8E6; --sun-dk: #9A6A00;
-  --lav: #A78BFA; --lav-lt: #F3EFFE; --lav-dk: #5B34C2;
-  --ink: #1E1E2E; --ink2: #3D3D55; --ink3: #6B6B8A;
-  --surface: #F7F6FD; --white: #FFFFFF;
-  --radius: 16px; --radius-sm: 10px;
+  --fg: #0a0a0a; --fg-2: #525252; --fg-3: #a3a3a3;
+  --border: #e5e5e5; --bg: #fafafa; --white: #ffffff;
+  --accent: #0a0a0a; --radius: 8px;
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body {
-  font-family: 'M PLUS Rounded 1c', sans-serif;
-  background: var(--surface);
-  color: var(--ink);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--bg);
+  color: var(--fg);
   font-size: 13px;
   line-height: 1.6;
 }
@@ -32,20 +27,8 @@ body {
   display: flex; align-items: center; gap: 16px;
   margin-bottom: 28px;
 }
-.hdr-badge {
-  display: flex; align-items: center; justify-content: center;
-  width: 52px; height: 52px; border-radius: 18px;
-  background: linear-gradient(135deg, var(--sun) 0%, var(--coral) 100%);
-  font-size: 26px; flex-shrink: 0;
-}
-.hdr-text h1 { font-size: 22px; font-weight: 800; color: var(--ink); letter-spacing: -0.5px; }
-.hdr-text p { font-size: 12px; color: var(--ink3); margin-top: 2px; }
-.hdr-pill {
-  margin-left: auto;
-  background: var(--sun-lt); color: var(--sun-dk);
-  padding: 6px 14px; border-radius: 99px;
-  font-size: 11px; font-weight: 700; letter-spacing: .3px;
-}
+.hdr-text h1 { font-size: 22px; font-weight: 700; color: var(--fg); letter-spacing: -0.5px; }
+.hdr-text p { font-size: 12px; color: var(--fg-3); margin-top: 2px; }
 
 /* Layout */
 .layout { display: grid; grid-template-columns: 320px 1fr; gap: 20px; align-items: start; }
@@ -55,7 +38,7 @@ body {
   background: var(--white);
   border-radius: var(--radius);
   padding: 20px;
-  border: 1.5px solid rgba(100,100,180,0.08);
+  border: 1px solid var(--border);
   margin-bottom: 16px;
 }
 .card:last-child { margin-bottom: 0; }
@@ -64,76 +47,68 @@ body {
 .card-hdr {
   display: flex; align-items: center; gap: 8px;
   margin-bottom: 16px; padding-bottom: 12px;
-  border-bottom: 1.5px dashed rgba(100,100,180,0.12);
+  border-bottom: 1px solid var(--border);
 }
-.card-hdr .icon {
-  width: 28px; height: 28px; border-radius: 8px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 14px; flex-shrink: 0;
-}
-.card-hdr h2 { font-size: 12px; font-weight: 700; color: var(--ink2); letter-spacing: .6px; text-transform: uppercase; }
+.card-hdr h2 { font-size: 12px; font-weight: 600; color: var(--fg-2); letter-spacing: .6px; text-transform: uppercase; }
 
 /* Section label */
 .sec {
-  font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
-  color: var(--ink3); margin: 14px 0 8px;
+  font-size: 10px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase;
+  color: var(--fg-3); margin: 14px 0 8px;
   display: flex; align-items: center; gap: 6px;
 }
-.sec::after { content:''; flex:1; height:1px; background: rgba(100,100,180,0.1); }
+.sec::after { content:''; flex:1; height:1px; background: var(--border); }
 .sec:first-child { margin-top: 0; }
 
 /* Input groups */
 .ig { margin-bottom: 10px; }
-.ig label { display: block; font-size: 11px; font-weight: 700; color: var(--ink3); margin-bottom: 4px; }
+.ig label { display: block; font-size: 11px; font-weight: 600; color: var(--fg-3); margin-bottom: 4px; }
 .ig-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .ig input {
   width: 100%;
-  background: var(--surface);
-  border: 1.5px solid rgba(100,100,180,0.12);
-  border-radius: var(--radius-sm);
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
   padding: 9px 12px;
-  color: var(--ink);
-  font-family: 'JetBrains Mono', monospace;
+  color: var(--fg);
+  font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
   font-size: 13px; font-weight: 500;
   outline: none;
-  transition: border-color .15s, box-shadow .15s;
+  transition: border-color .15s;
 }
-.ig input:focus { border-color: var(--sky); box-shadow: 0 0 0 3px rgba(77,166,255,.15); }
-.ig.g input:focus { border-color: var(--mint); box-shadow: 0 0 0 3px rgba(0,200,150,.15); }
-.ig.g label { color: var(--mint-dk); }
+.ig input:focus { border-color: var(--fg-3); }
 
 /* Rate items */
 .rate-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 .rate-item {
-  background: var(--sun-lt);
-  border: 1.5px solid rgba(255,184,48,.2);
-  border-radius: var(--radius-sm);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
   padding: 10px 12px;
 }
-.rate-item label { display: block; font-size: 10px; font-weight: 700; color: var(--sun-dk); margin-bottom: 6px; line-height: 1.4; }
+.rate-item label { display: block; font-size: 10px; font-weight: 600; color: var(--fg-2); margin-bottom: 6px; line-height: 1.4; }
 .rate-item input {
   width: 100%; background: transparent; border: none;
-  border-bottom: 2px solid rgba(255,184,48,.4);
+  border-bottom: 1px solid var(--border);
   border-radius: 0; padding: 3px 0;
-  color: var(--ink); font-family: 'JetBrains Mono', monospace;
+  color: var(--fg); font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
   font-size: 15px; font-weight: 700; outline: none;
   transition: border-color .15s;
 }
-.rate-item input:focus { border-bottom-color: var(--sun); }
-.rate-note { font-size: 10px; color: var(--ink3); margin-bottom: 10px; line-height: 1.6; }
+.rate-item input:focus { border-bottom-color: var(--fg-3); }
+.rate-note { font-size: 10px; color: var(--fg-3); margin-bottom: 10px; line-height: 1.6; }
 
 /* Calc button */
 .calc-btn {
   width: 100%; margin-top: 16px; padding: 13px;
-  background: linear-gradient(135deg, var(--sun) 0%, var(--coral) 100%);
-  border: none; border-radius: var(--radius-sm);
-  color: #fff; font-family: 'M PLUS Rounded 1c', sans-serif;
-  font-size: 14px; font-weight: 800; cursor: pointer;
+  background: var(--fg);
+  border: none; border-radius: var(--radius);
+  color: var(--white); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 14px; font-weight: 600; cursor: pointer;
   letter-spacing: .3px;
-  box-shadow: 0 4px 16px rgba(255,184,48,.35);
-  transition: transform .1s, box-shadow .15s;
+  transition: opacity .15s;
 }
-.calc-btn:hover { box-shadow: 0 6px 20px rgba(255,184,48,.45); }
+.calc-btn:hover { opacity: 0.85; }
 .calc-btn:active { transform: scale(.98); }
 
 /* Summary pills row */
@@ -146,23 +121,23 @@ body {
   border-radius: var(--radius);
   padding: 14px 12px;
   text-align: center;
-  border: 1.5px solid rgba(100,100,180,0.08);
+  border: 1px solid var(--border);
 }
-.s-pill .s-label { font-size: 10px; font-weight: 700; color: var(--ink3); letter-spacing: .5px; margin-bottom: 6px; }
+.s-pill .s-label { font-size: 10px; font-weight: 600; color: var(--fg-3); letter-spacing: .5px; margin-bottom: 6px; }
 .s-pill .s-val {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 17px; font-weight: 700; color: var(--ink);
+  font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+  font-size: 17px; font-weight: 700; color: var(--fg);
   letter-spacing: -0.5px;
 }
-.s-pill .s-unit { font-size: 10px; font-weight: 500; color: var(--ink3); margin-top: 2px; }
-.s-pill.good { border-color: var(--mint); background: var(--mint-lt); }
-.s-pill.good .s-val { color: var(--mint-dk); }
-.s-pill.bad { border-color: var(--coral); background: var(--coral-lt); }
-.s-pill.bad .s-val { color: var(--coral-dk); }
-.s-pill.warn { border-color: var(--sun); background: var(--sun-lt); }
-.s-pill.warn .s-val { color: var(--sun-dk); }
-.s-pill.sky { border-color: var(--sky); background: var(--sky-lt); }
-.s-pill.sky .s-val { color: var(--sky-dk); }
+.s-pill .s-unit { font-size: 10px; font-weight: 500; color: var(--fg-3); margin-top: 2px; }
+.s-pill.good { border-color: var(--border); }
+.s-pill.good .s-val { color: #16a34a; }
+.s-pill.bad { border-color: var(--border); }
+.s-pill.bad .s-val { color: #dc2626; }
+.s-pill.warn { border-color: var(--border); }
+.s-pill.warn .s-val { color: var(--fg-2); }
+.s-pill.sky { border-color: var(--border); }
+.s-pill.sky .s-val { color: var(--fg); }
 
 /* Chart area */
 .chart-wrap { position: relative; height: 260px; margin-bottom: 8px; }
@@ -170,24 +145,24 @@ canvas { display: block; width: 100% !important; }
 
 /* Legend */
 .legend { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 16px; }
-.legend-item { display: flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 700; color: var(--ink3); }
+.legend-item { display: flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 600; color: var(--fg-3); }
 .legend-dot { width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0; }
 
 /* Progress bar */
 .progress-wrap { margin-bottom: 16px; }
 .progress-label {
   display: flex; justify-content: space-between;
-  font-size: 11px; font-weight: 700; color: var(--ink3);
+  font-size: 11px; font-weight: 600; color: var(--fg-3);
   margin-bottom: 6px;
 }
 .progress-bar {
-  height: 10px; border-radius: 99px;
-  background: rgba(100,100,180,0.1);
+  height: 10px; border-radius: 8px;
+  background: var(--border);
   overflow: hidden;
 }
 .progress-fill {
-  height: 100%; border-radius: 99px;
-  background: linear-gradient(90deg, var(--sun) 0%, var(--mint) 100%);
+  height: 100%; border-radius: 8px;
+  background: var(--fg);
   transition: width 0.6s ease;
 }
 
@@ -195,61 +170,53 @@ canvas { display: block; width: 100% !important; }
 .tbl-wrap { overflow-x: auto; }
 table { width: 100%; border-collapse: collapse; font-size: 12px; }
 thead th {
-  background: var(--surface);
+  background: var(--bg);
   padding: 8px 10px;
   text-align: right;
-  font-size: 10px; font-weight: 700; letter-spacing: .5px;
-  color: var(--ink3); border-bottom: 1.5px solid rgba(100,100,180,0.1);
+  font-size: 10px; font-weight: 600; letter-spacing: .5px;
+  color: var(--fg-3); border-bottom: 1px solid var(--border);
   white-space: nowrap;
 }
 thead th:first-child { text-align: center; }
-tbody tr:hover { background: rgba(100,100,180,0.03); }
+tbody tr:hover { background: var(--bg); }
 tbody td {
   padding: 7px 10px; text-align: right;
-  border-bottom: 1px solid rgba(100,100,180,0.07);
-  font-family: 'JetBrains Mono', monospace; font-size: 12px;
+  border-bottom: 1px solid var(--border);
+  font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace; font-size: 12px;
 }
 tbody td:first-child {
-  text-align: center; font-family: 'M PLUS Rounded 1c', sans-serif;
-  font-weight: 700; font-size: 12px; color: var(--ink2);
+  text-align: center; font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-weight: 600; font-size: 12px; color: var(--fg-2);
 }
-.tbl-retire { background: rgba(255,184,48,.07) !important; }
-.tbl-goal { background: rgba(0,200,150,.07) !important; }
-.tbl-neg td { color: var(--coral-dk) !important; }
-.tbl-retire td:first-child::after { content: ' 退職'; font-size: 9px; color: var(--sun-dk); }
+.tbl-retire { background: var(--bg) !important; }
+.tbl-goal { background: var(--bg) !important; }
+.tbl-neg td { color: #dc2626 !important; }
+.tbl-retire td:first-child::after { content: ' 退職'; font-size: 9px; color: var(--fg-3); }
 
 /* Phase badge */
 .phase-badge {
-  display: inline-block; padding: 2px 8px; border-radius: 99px;
-  font-size: 9px; font-weight: 700; letter-spacing: .3px;
+  display: inline-block; padding: 2px 8px; border-radius: 8px;
+  font-size: 9px; font-weight: 600; letter-spacing: .3px;
 }
-.phase-save { background: var(--sky-lt); color: var(--sky-dk); }
-.phase-draw { background: var(--coral-lt); color: var(--coral-dk); }
+.phase-save { background: var(--bg); color: var(--fg-2); }
+.phase-draw { background: var(--bg); color: var(--fg-2); }
 
 /* Alert box */
 .alert {
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius);
   padding: 12px 14px; margin-bottom: 16px;
   font-size: 12px; font-weight: 500; line-height: 1.6;
   display: flex; gap: 8px; align-items: flex-start;
+  background: var(--white);
+  color: var(--fg);
 }
 .alert-icon { font-size: 16px; flex-shrink: 0; }
-.alert.ok { background: var(--mint-lt); border: 1px solid var(--mint); color: var(--mint-dk); }
-.alert.ng { background: var(--coral-lt); border: 1px solid var(--coral); color: var(--coral-dk); }
-.alert.warn { background: var(--sun-lt); border: 1px solid var(--sun); color: var(--sun-dk); }
+.alert.ok { border: 1px solid #86efac; }
+.alert.ng { border: 1px solid #fca5a5; }
+.alert.warn { border: 1px solid #fde68a; }
 
-/* Nav */
-.nav-links {
-  display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px;
-}
-.nav-link {
-  background: var(--white); border: 1.5px solid rgba(100,100,180,0.1);
-  border-radius: 99px; padding: 5px 14px;
-  font-size: 11px; font-weight: 700; color: var(--ink3);
-  text-decoration: none; transition: all .15s;
-}
-.nav-link:hover { border-color: var(--sun); color: var(--sun-dk); }
-.nav-link.active { background: var(--sun-lt); border-color: var(--sun); color: var(--sun-dk); }
+.pos { color: #16a34a; }
+.neg { color: #dc2626; }
 
 @media (max-width: 900px) {
   .layout { grid-template-columns: 1fr; }
@@ -259,23 +226,21 @@ tbody td:first-child {
 </style>
 </head>
 <body>
+
+<header style="border-bottom:1px solid #e5e5e5;background:#fff;">
+  <div style="max-width:1440px;margin:0 auto;padding:16px 28px;display:flex;align-items:center;justify-content:space-between;">
+    <a href="index.html" style="font-size:14px;font-weight:700;color:#0a0a0a;text-decoration:none;letter-spacing:-0.5px;">enojun/tools</a>
+    <span style="font-size:13px;color:#a3a3a3;">Retirement Simulator</span>
+  </div>
+</header>
+
 <div class="app">
 
   <div class="hdr">
-    <div class="hdr-badge">🌅</div>
     <div class="hdr-text">
       <h1>老後資金シミュレーター</h1>
-      <p>積立・退職・取り崩しを一括で可視化するライフプランツール</p>
+      <p>年金・貯蓄・投資を含む退職後の資金シミュレーション</p>
     </div>
-    <div class="hdr-pill">老後対策</div>
-  </div>
-
-  <div class="nav-links">
-    <a href="index.html" class="nav-link">🏠 住宅ローン</a>
-    <a href="car_resale_simulator.html" class="nav-link">🚗 車査定</a>
-    <a href="ageo_portal.html" class="nav-link">🍜 上尾ポータル</a>
-    <a href="retirement_simulator.html" class="nav-link active">🌅 老後資金</a>
-    <a href="download.html" class="nav-link">📱 APKダウンロード</a>
   </div>
 
   <div class="layout">
@@ -286,7 +251,6 @@ tbody td:first-child {
       <!-- 基本情報 -->
       <div class="card">
         <div class="card-hdr">
-          <div class="icon" style="background:var(--sky-lt)">👤</div>
           <h2>基本情報</h2>
         </div>
 
@@ -316,7 +280,6 @@ tbody td:first-child {
       <!-- 積立計画 -->
       <div class="card">
         <div class="card-hdr">
-          <div class="icon" style="background:var(--mint-lt)">💰</div>
           <h2>積立計画</h2>
         </div>
 
@@ -332,12 +295,12 @@ tbody td:first-child {
           <div class="rate-item">
             <label>積立期間の年率リターン</label>
             <input type="number" id="returnRate" value="5" step="0.1" min="0" max="15">
-            <span style="font-size:10px;color:var(--sun-dk)">% / 年</span>
+            <span style="font-size:10px;color:var(--fg-3)">% / 年</span>
           </div>
           <div class="rate-item">
             <label>取り崩し期間の年率リターン</label>
             <input type="number" id="drawRate" value="3" step="0.1" min="0" max="10">
-            <span style="font-size:10px;color:var(--sun-dk)">% / 年</span>
+            <span style="font-size:10px;color:var(--fg-3)">% / 年</span>
           </div>
         </div>
       </div>
@@ -345,7 +308,6 @@ tbody td:first-child {
       <!-- 退職後の生活費 -->
       <div class="card">
         <div class="card-hdr">
-          <div class="icon" style="background:var(--coral-lt)">🏡</div>
           <h2>退職後の生活設計</h2>
         </div>
 
@@ -363,7 +325,7 @@ tbody td:first-child {
           <input type="number" id="retireBonus" value="500" min="0">
         </div>
 
-        <button class="calc-btn" onclick="calc()">📊 シミュレーション実行</button>
+        <button class="calc-btn" onclick="calc()">シミュレーション実行</button>
       </div>
 
     </div>
@@ -419,18 +381,17 @@ tbody td:first-child {
       <!-- Chart -->
       <div class="card">
         <div class="card-hdr">
-          <div class="icon" style="background:var(--sun-lt)">📈</div>
           <h2>資産推移グラフ</h2>
         </div>
         <div class="legend">
-          <div class="legend-item"><div class="legend-dot" style="background:var(--sky)"></div>資産残高</div>
-          <div class="legend-item"><div class="legend-dot" style="background:var(--mint)"></div>積立元本（累計）</div>
-          <div class="legend-item"><div class="legend-dot" style="background:rgba(255,184,48,0.4); border:1px dashed var(--sun-dk)"></div>退職ライン</div>
+          <div class="legend-item"><div class="legend-dot" style="background:#525252"></div>資産残高</div>
+          <div class="legend-item"><div class="legend-dot" style="background:#a3a3a3"></div>積立元本（累計）</div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--border); border:1px dashed var(--fg-3)"></div>退職ライン</div>
         </div>
         <div class="chart-wrap">
           <canvas id="chart"></canvas>
         </div>
-        <div style="font-size:10px;color:var(--ink3);text-align:right;margin-top:4px">
+        <div style="font-size:10px;color:var(--fg-3);text-align:right;margin-top:4px">
           縦軸：資産残高（万円）　横軸：年齢
         </div>
       </div>
@@ -438,7 +399,6 @@ tbody td:first-child {
       <!-- Table -->
       <div class="card">
         <div class="card-hdr">
-          <div class="icon" style="background:var(--lav-lt)">📋</div>
           <h2>年齢別・資産推移テーブル</h2>
         </div>
         <div class="tbl-wrap">
@@ -594,9 +554,9 @@ function calc() {
     return `<tr class="${cls}">
       <td>${r.age}歳</td>
       <td><span class="phase-badge ${r.phase==='save'?'phase-save':'phase-draw'}">${r.phase==='save'?'積立':'取崩'}</span></td>
-      <td style="color:${r.flow>=0?'var(--sky-dk)':'var(--coral-dk)'}">${fmtSign(Math.round(r.flow))} 万円</td>
+      <td style="color:${r.flow>=0?'var(--fg-2)':'#dc2626'}">${fmtSign(Math.round(r.flow))} 万円</td>
       <td>${fmt(Math.round(r.cumPrincipal))} 万円</td>
-      <td style="color:${r.gain>=0?'var(--mint-dk)':'var(--coral-dk)'}">${fmtSign(Math.round(r.gain))} 万円</td>
+      <td style="color:${r.gain>=0?'#16a34a':'#dc2626'}">${fmtSign(Math.round(r.gain))} 万円</td>
       <td><strong>${fmt(Math.round(r.balance))} 万円</strong></td>
     </tr>`;
   }).join('');
@@ -634,14 +594,14 @@ function drawChart(rows, curAge, retireAge, lifeAge) {
   ctx.clearRect(0, 0, W, H);
 
   // grid lines
-  ctx.strokeStyle = 'rgba(100,100,180,0.07)';
+  ctx.strokeStyle = '#e5e5e5';
   ctx.lineWidth = 1;
   for (let i = 0; i <= 4; i++) {
     const y = PAD.top + (cH / 4) * i;
     ctx.beginPath(); ctx.moveTo(PAD.left, y); ctx.lineTo(W - PAD.right, y); ctx.stroke();
     const val = maxVal - (valRange / 4) * i + minVal;
-    ctx.fillStyle = 'rgba(100,100,180,0.5)';
-    ctx.font = '10px JetBrains Mono, monospace';
+    ctx.fillStyle = '#a3a3a3';
+    ctx.font = '10px SF Mono, Fira Code, Consolas, monospace';
     ctx.textAlign = 'right';
     ctx.fillText(Math.round(val).toLocaleString(), PAD.left - 6, y + 4);
   }
@@ -650,13 +610,13 @@ function drawChart(rows, curAge, retireAge, lifeAge) {
   const retireIdx = rows.findIndex(r => r.age === retireAge);
   if (retireIdx >= 0) {
     const rx = xOf(retireIdx);
-    ctx.strokeStyle = 'rgba(255,184,48,0.5)';
+    ctx.strokeStyle = '#a3a3a3';
     ctx.lineWidth = 1.5;
     ctx.setLineDash([4, 3]);
     ctx.beginPath(); ctx.moveTo(rx, PAD.top); ctx.lineTo(rx, H - PAD.bottom); ctx.stroke();
     ctx.setLineDash([]);
-    ctx.fillStyle = 'rgba(255,184,48,0.8)';
-    ctx.font = 'bold 10px M PLUS Rounded 1c, sans-serif';
+    ctx.fillStyle = '#a3a3a3';
+    ctx.font = 'bold 10px Inter, sans-serif';
     ctx.textAlign = 'center';
     ctx.fillText('退職', rx, PAD.top + 10);
   }
@@ -668,41 +628,38 @@ function drawChart(rows, curAge, retireAge, lifeAge) {
   ctx.lineTo(xOf(rows.length-1), yOf(minVal));
   ctx.lineTo(xOf(0), yOf(minVal));
   ctx.closePath();
-  ctx.fillStyle = 'rgba(0,200,150,0.08)';
+  ctx.fillStyle = 'rgba(163,163,163,0.08)';
   ctx.fill();
 
   // principal line
   ctx.beginPath();
   principals.forEach((p, i) => i === 0 ? ctx.moveTo(xOf(i), yOf(p)) : ctx.lineTo(xOf(i), yOf(p)));
-  ctx.strokeStyle = 'rgba(0,200,150,0.5)';
+  ctx.strokeStyle = '#a3a3a3';
   ctx.lineWidth = 1.5;
   ctx.setLineDash([3, 3]);
   ctx.stroke();
   ctx.setLineDash([]);
 
-  // balance area fill (gradient)
-  const grad = ctx.createLinearGradient(0, PAD.top, 0, H - PAD.bottom);
-  grad.addColorStop(0, 'rgba(77,166,255,0.25)');
-  grad.addColorStop(1, 'rgba(77,166,255,0.03)');
+  // balance area fill
   ctx.beginPath();
   ctx.moveTo(xOf(0), yOf(balances[0]));
   balances.forEach((b, i) => ctx.lineTo(xOf(i), yOf(b)));
   ctx.lineTo(xOf(rows.length-1), yOf(Math.max(minVal, 0)));
   ctx.lineTo(xOf(0), yOf(Math.max(minVal, 0)));
   ctx.closePath();
-  ctx.fillStyle = grad;
+  ctx.fillStyle = 'rgba(10,10,10,0.06)';
   ctx.fill();
 
   // balance line
   ctx.beginPath();
   balances.forEach((b, i) => i === 0 ? ctx.moveTo(xOf(i), yOf(b)) : ctx.lineTo(xOf(i), yOf(b)));
-  ctx.strokeStyle = 'var(--sky)';
+  ctx.strokeStyle = '#525252';
   ctx.lineWidth = 2.5;
   ctx.stroke();
 
   // x-axis labels
-  ctx.fillStyle = 'rgba(100,100,180,0.6)';
-  ctx.font = '10px M PLUS Rounded 1c, sans-serif';
+  ctx.fillStyle = '#a3a3a3';
+  ctx.font = '10px Inter, sans-serif';
   ctx.textAlign = 'center';
   ages.forEach((age, i) => {
     if (i % 5 === 0 || age === retireAge) {

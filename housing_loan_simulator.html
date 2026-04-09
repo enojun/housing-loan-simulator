@@ -5,23 +5,18 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>住宅ローンシミュレーター</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 :root {
-  --mint: #00C896; --mint-lt: #E0FBF3; --mint-dk: #007A5A;
-  --coral: #FF6B6B; --coral-lt: #FFF0F0; --coral-dk: #C0392B;
-  --sky: #4DA6FF; --sky-lt: #EBF4FF; --sky-dk: #1A5FAC;
-  --sun: #FFB830; --sun-lt: #FFF8E6; --sun-dk: #9A6A00;
-  --lav: #A78BFA; --lav-lt: #F3EFFE; --lav-dk: #5B34C2;
-  --ink: #1E1E2E; --ink2: #3D3D55; --ink3: #6B6B8A;
-  --surface: #F7F6FD; --white: #FFFFFF;
-  --radius: 16px; --radius-sm: 10px;
+  --fg: #0a0a0a; --fg-2: #525252; --fg-3: #a3a3a3;
+  --border: #e5e5e5; --bg: #fafafa; --white: #ffffff;
+  --accent: #0a0a0a; --radius: 8px;
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body {
-  font-family: 'M PLUS Rounded 1c', sans-serif;
-  background: var(--surface);
-  color: var(--ink);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--bg);
+  color: var(--fg);
   font-size: 13px;
   line-height: 1.6;
 }
@@ -29,23 +24,10 @@ body {
 
 /* Header */
 .hdr {
-  display: flex; align-items: center; gap: 16px;
   margin-bottom: 28px;
 }
-.hdr-badge {
-  display: flex; align-items: center; justify-content: center;
-  width: 52px; height: 52px; border-radius: 18px;
-  background: linear-gradient(135deg, var(--mint) 0%, var(--sky) 100%);
-  font-size: 26px; flex-shrink: 0;
-}
-.hdr-text h1 { font-size: 22px; font-weight: 800; color: var(--ink); letter-spacing: -0.5px; }
-.hdr-text p { font-size: 12px; color: var(--ink3); margin-top: 2px; }
-.hdr-pill {
-  margin-left: auto;
-  background: var(--lav-lt); color: var(--lav-dk);
-  padding: 6px 14px; border-radius: 99px;
-  font-size: 11px; font-weight: 700; letter-spacing: .3px;
-}
+.hdr-text h1 { font-size: 24px; font-weight: 700; color: var(--fg); letter-spacing: -0.8px; }
+.hdr-text p { font-size: 13px; color: var(--fg-3); margin-top: 4px; }
 
 /* Layout */
 .layout { display: grid; grid-template-columns: 320px 1fr; gap: 20px; align-items: start; }
@@ -55,7 +37,7 @@ body {
   background: var(--white);
   border-radius: var(--radius);
   padding: 20px;
-  border: 1.5px solid rgba(100,100,180,0.08);
+  border: 1px solid var(--border);
   margin-bottom: 16px;
 }
 .card:last-child { margin-bottom: 0; }
@@ -64,76 +46,70 @@ body {
 .card-hdr {
   display: flex; align-items: center; gap: 8px;
   margin-bottom: 16px; padding-bottom: 12px;
-  border-bottom: 1.5px dashed rgba(100,100,180,0.12);
+  border-bottom: 1px solid var(--border);
 }
-.card-hdr .icon {
-  width: 28px; height: 28px; border-radius: 8px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 14px; flex-shrink: 0;
-}
-.card-hdr h2 { font-size: 12px; font-weight: 700; color: var(--ink2); letter-spacing: .6px; text-transform: uppercase; }
+.card-hdr h2 { font-size: 12px; font-weight: 700; color: var(--fg-2); letter-spacing: .6px; text-transform: uppercase; }
 
 /* Section label */
 .sec {
   font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
-  color: var(--ink3); margin: 14px 0 8px;
+  color: var(--fg-3); margin: 14px 0 8px;
   display: flex; align-items: center; gap: 6px;
 }
-.sec::after { content:''; flex:1; height:1px; background: rgba(100,100,180,0.1); }
+.sec::after { content:''; flex:1; height:1px; background: var(--border); }
 .sec:first-child { margin-top: 0; }
 
 /* Input groups */
 .ig { margin-bottom: 10px; }
-.ig label { display: block; font-size: 11px; font-weight: 700; color: var(--ink3); margin-bottom: 4px; }
+.ig label { display: block; font-size: 11px; font-weight: 600; color: var(--fg-3); margin-bottom: 4px; }
 .ig-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .ig input {
   width: 100%;
-  background: var(--surface);
-  border: 1.5px solid rgba(100,100,180,0.12);
-  border-radius: var(--radius-sm);
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
   padding: 9px 12px;
-  color: var(--ink);
-  font-family: 'JetBrains Mono', monospace;
+  color: var(--fg);
+  font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
   font-size: 13px; font-weight: 500;
   outline: none;
-  transition: border-color .15s, box-shadow .15s;
+  transition: border-color .15s;
 }
-.ig input:focus { border-color: var(--sky); box-shadow: 0 0 0 3px rgba(77,166,255,.15); }
-.ig.g input:focus { border-color: var(--mint); box-shadow: 0 0 0 3px rgba(0,200,150,.15); }
-.ig.g label { color: var(--mint-dk); }
+.ig input:focus { border-color: var(--fg-3); }
+.ig.g input:focus { border-color: var(--fg-3); }
+.ig.g label { color: var(--fg-2); }
 
 /* Rate items */
 .rate-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 .rate-item {
-  background: var(--lav-lt);
-  border: 1.5px solid rgba(167,139,250,.2);
-  border-radius: var(--radius-sm);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
   padding: 10px 12px;
 }
-.rate-item label { display: block; font-size: 10px; font-weight: 700; color: var(--lav-dk); margin-bottom: 6px; line-height: 1.4; }
+.rate-item label { display: block; font-size: 10px; font-weight: 600; color: var(--fg-2); margin-bottom: 6px; line-height: 1.4; }
 .rate-item input {
   width: 100%; background: transparent; border: none;
-  border-bottom: 2px solid rgba(167,139,250,.4);
+  border-bottom: 1px solid var(--border);
   border-radius: 0; padding: 3px 0;
-  color: var(--ink); font-family: 'JetBrains Mono', monospace;
+  color: var(--fg); font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
   font-size: 15px; font-weight: 700; outline: none;
   transition: border-color .15s;
 }
-.rate-item input:focus { border-bottom-color: var(--lav); }
-.rate-note { font-size: 10px; color: var(--ink3); margin-bottom: 10px; line-height: 1.6; }
+.rate-item input:focus { border-bottom-color: var(--fg-3); }
+.rate-note { font-size: 10px; color: var(--fg-3); margin-bottom: 10px; line-height: 1.6; }
 
 /* Calc button */
 .calc-btn {
   width: 100%; margin-top: 16px; padding: 13px;
-  background: linear-gradient(135deg, var(--mint) 0%, var(--sky) 100%);
-  border: none; border-radius: var(--radius-sm);
-  color: #fff; font-family: 'M PLUS Rounded 1c', sans-serif;
-  font-size: 14px; font-weight: 800; cursor: pointer;
+  background: var(--fg);
+  border: none; border-radius: var(--radius);
+  color: var(--white); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 14px; font-weight: 700; cursor: pointer;
   letter-spacing: .3px;
-  box-shadow: 0 4px 16px rgba(0,200,150,.3);
-  transition: transform .1s, box-shadow .15s;
+  transition: opacity .15s;
 }
-.calc-btn:hover { box-shadow: 0 6px 20px rgba(0,200,150,.4); }
+.calc-btn:hover { opacity: 0.8; }
 .calc-btn:active { transform: scale(.98); }
 
 /* Summary pills row */
@@ -146,129 +122,115 @@ body {
   border-radius: var(--radius);
   padding: 14px 12px;
   text-align: center;
-  border: 1.5px solid rgba(100,100,180,0.08);
-  position: relative; overflow: hidden;
+  border: 1px solid var(--border);
 }
-.s-pill::before {
-  content: '';
-  position: absolute; top: 0; left: 0; right: 0; height: 4px;
-  border-radius: 99px 99px 0 0;
-}
-.s-pill.blue::before { background: var(--sky); }
-.s-pill.mint::before { background: var(--mint); }
-.s-pill.sun::before { background: var(--sun); }
-.s-pill.coral::before { background: var(--coral); }
-.s-pill h4 { font-size: 10px; font-weight: 700; color: var(--ink3); margin-bottom: 6px; margin-top: 4px; }
-.s-pill .val { font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 700; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.s-pill .sub { font-size: 10px; color: var(--ink3); margin-top: 2px; }
-.s-pill.mint .val { color: var(--mint-dk); }
+.s-pill h4 { font-size: 10px; font-weight: 600; color: var(--fg-3); margin-bottom: 6px; }
+.s-pill .val { font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace; font-size: 13px; font-weight: 700; color: var(--fg); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.s-pill .sub { font-size: 10px; color: var(--fg-3); margin-top: 2px; }
 
 /* Table panel */
 .tbl-wrap {
   background: var(--white); border-radius: var(--radius);
-  border: 1.5px solid rgba(100,100,180,0.08);
+  border: 1px solid var(--border);
   overflow: hidden; margin-bottom: 16px;
 }
 .tbl-hdr {
   display: flex; align-items: center; gap: 8px;
-  padding: 14px 18px; background: var(--surface);
-  border-bottom: 1.5px dashed rgba(100,100,180,0.12);
-  font-size: 11px; font-weight: 700; color: var(--ink2); letter-spacing: .6px; text-transform: uppercase;
+  padding: 14px 18px; background: var(--bg);
+  border-bottom: 1px solid var(--border);
+  font-size: 11px; font-weight: 700; color: var(--fg-2); letter-spacing: .6px; text-transform: uppercase;
 }
 .tbl-hdr .tag {
-  margin-left: auto; background: var(--lav-lt);
-  color: var(--lav-dk); padding: 3px 10px; border-radius: 99px;
-  font-size: 10px; font-weight: 700;
+  margin-left: auto; background: var(--bg);
+  color: var(--fg-3); padding: 3px 10px; border-radius: var(--radius);
+  font-size: 10px; font-weight: 600;
+  border: 1px solid var(--border);
 }
 .tbl-scroll { max-height: 380px; overflow-y: auto; }
 .tbl-scroll::-webkit-scrollbar { width: 4px; }
-.tbl-scroll::-webkit-scrollbar-track { background: var(--surface); }
-.tbl-scroll::-webkit-scrollbar-thumb { background: rgba(100,100,180,0.2); border-radius: 2px; }
+.tbl-scroll::-webkit-scrollbar-track { background: var(--bg); }
+.tbl-scroll::-webkit-scrollbar-thumb { background: var(--fg-3); border-radius: 2px; }
 table { width: 100%; border-collapse: collapse; font-size: 11.5px; }
 thead th {
-  background: var(--surface); padding: 9px 10px;
+  background: var(--bg); padding: 9px 10px;
   text-align: right; font-size: 10px; font-weight: 700;
-  letter-spacing: .6px; color: var(--ink3); text-transform: uppercase;
+  letter-spacing: .6px; color: var(--fg-3); text-transform: uppercase;
   position: sticky; top: 0; z-index: 5;
-  border-bottom: 1px solid rgba(100,100,180,.1);
+  border-bottom: 1px solid var(--border);
 }
 thead th:first-child, thead th:nth-child(2) { text-align: center; }
 tbody td {
   padding: 7px 10px; text-align: right;
-  border-bottom: 1px solid rgba(100,100,180,.06);
-  font-family: 'JetBrains Mono', monospace; font-size: 11px;
+  border-bottom: 1px solid var(--border);
+  font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace; font-size: 11px;
 }
 tbody td:first-child, tbody td:nth-child(2) {
   text-align: center;
-  font-family: 'M PLUS Rounded 1c', sans-serif;
-  font-weight: 700; font-size: 11px; color: var(--ink2);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-weight: 700; font-size: 11px; color: var(--fg-2);
 }
-tbody tr:hover { background: var(--surface); }
-tbody tr.hi { background: #FFFBEE; }
-tbody tr.rc { border-top: 1.5px solid rgba(167,139,250,.3); }
+tbody tr:hover { background: var(--bg); }
+tbody tr.hi { background: #fafaf8; }
+tbody tr.rc { border-top: 1px solid var(--fg-3); }
 tbody tr.rc td:first-child {
   position: relative;
 }
 tbody tr.rc td:first-child::before {
   content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
-  background: var(--lav); border-radius: 0 2px 2px 0;
+  background: var(--fg-3); border-radius: 0 2px 2px 0;
 }
-.pos { color: var(--mint-dk); font-weight: 700; }
-.neg { color: var(--coral-dk); font-weight: 700; }
-.ded { color: var(--mint-dk); }
-.rent { color: var(--sun-dk); font-weight: 700; }
-.rcol { color: var(--lav-dk); font-weight: 700; }
+.pos { color: #16a34a; font-weight: 700; }
+.neg { color: #dc2626; font-weight: 700; }
+.ded { color: #16a34a; }
+.rent { color: var(--fg-2); font-weight: 700; }
+.rcol { color: var(--fg-2); font-weight: 700; }
 
 /* Analysis bottom */
 .analysis { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .an-card {
   background: var(--white); border-radius: var(--radius); padding: 16px;
-  border: 1.5px solid rgba(100,100,180,0.08);
+  border: 1px solid var(--border);
 }
 .an-card h4 {
-  font-size: 12px; font-weight: 700; color: var(--ink2);
+  font-size: 12px; font-weight: 700; color: var(--fg-2);
   margin-bottom: 12px; padding-bottom: 10px;
-  border-bottom: 1.5px dashed rgba(100,100,180,0.12);
+  border-bottom: 1px solid var(--border);
 }
 .an-row {
   display: flex; justify-content: space-between; align-items: center;
-  padding: 6px 0; border-bottom: 1px solid rgba(100,100,180,.06); font-size: 12px;
+  padding: 6px 0; border-bottom: 1px solid var(--border); font-size: 12px;
 }
 .an-row:last-child { border-bottom: none; }
-.an-row .lbl { color: var(--ink3); }
-.an-row .v { font-family: 'JetBrains Mono', monospace; font-weight: 700; color: var(--ink); }
+.an-row .lbl { color: var(--fg-3); }
+.an-row .v { font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace; font-weight: 700; color: var(--fg); }
 .badge {
   display: inline-flex; align-items: center; gap: 5px;
-  padding: 5px 12px; border-radius: 99px;
+  padding: 5px 12px; border-radius: var(--radius);
   font-size: 11px; font-weight: 700; margin-top: 10px;
+  border: 1px solid var(--border);
 }
-.badge.green { background: var(--mint-lt); color: var(--mint-dk); }
-.badge.amber { background: var(--sun-lt); color: var(--sun-dk); }
-.badge.red { background: var(--coral-lt); color: var(--coral-dk); }
-.note { font-size: 11px; color: var(--ink3); margin-top: 10px; line-height: 1.7; }
-.note strong { color: var(--ink2); }
+.badge.green { background: #f5f5f5; color: var(--fg); }
+.badge.amber { background: #f5f5f5; color: var(--fg); }
+.badge.red { background: #f5f5f5; color: var(--fg); }
+.note { font-size: 11px; color: var(--fg-3); margin-top: 10px; line-height: 1.7; }
+.note strong { color: var(--fg-2); }
 </style>
 </head>
 <body>
+<header style="border-bottom:1px solid #e5e5e5;background:#fff;">
+  <div style="max-width:1440px;margin:0 auto;padding:16px 28px;display:flex;align-items:center;justify-content:space-between;">
+    <a href="index.html" style="font-size:14px;font-weight:700;color:#0a0a0a;text-decoration:none;letter-spacing:-0.5px;">enojun/tools</a>
+    <span style="font-size:13px;color:#a3a3a3;">Housing Loan Simulator</span>
+  </div>
+</header>
 <div class="app">
 
   <!-- Header -->
   <div class="hdr">
-    <div class="hdr-badge">🏠</div>
     <div class="hdr-text">
       <h1>住宅ローンシミュレーター</h1>
       <p>借入条件・住宅ローン控除・5年毎金利変動を考慮した年次詳細分析</p>
     </div>
-    <div class="hdr-pill">✦ 変動金利対応</div>
-  </div>
-
-  <div class="nav-links" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;">
-    <a href="index.html" style="background:var(--white);border:1.5px solid rgba(100,100,180,0.1);border-radius:99px;padding:5px 14px;font-size:11px;font-weight:700;color:var(--ink3);text-decoration:none;">⚡ ポータル</a>
-    <a href="housing_loan_simulator.html" style="background:var(--mint-lt);border:1.5px solid var(--mint);border-radius:99px;padding:5px 14px;font-size:11px;font-weight:700;color:var(--mint-dk);text-decoration:none;">🏠 住宅ローン</a>
-    <a href="car_resale_simulator.html" style="background:var(--white);border:1.5px solid rgba(100,100,180,0.1);border-radius:99px;padding:5px 14px;font-size:11px;font-weight:700;color:var(--ink3);text-decoration:none;">🚗 車査定</a>
-    <a href="ageo_portal.html" style="background:var(--white);border:1.5px solid rgba(100,100,180,0.1);border-radius:99px;padding:5px 14px;font-size:11px;font-weight:700;color:var(--ink3);text-decoration:none;">🍜 上尾ポータル</a>
-    <a href="retirement_simulator.html" style="background:var(--white);border:1.5px solid rgba(100,100,180,0.1);border-radius:99px;padding:5px 14px;font-size:11px;font-weight:700;color:var(--ink3);text-decoration:none;">🌅 老後資金</a>
-    <a href="download.html" style="background:var(--white);border:1.5px solid rgba(100,100,180,0.1);border-radius:99px;padding:5px 14px;font-size:11px;font-weight:700;color:var(--ink3);text-decoration:none;">📱 APK</a>
   </div>
 
   <div class="layout">
@@ -277,7 +239,6 @@ tbody tr.rc td:first-child::before {
     <div>
       <div class="card">
         <div class="card-hdr">
-          <div class="icon" style="background:var(--sky-lt);">📋</div>
           <h2>基本情報・費用・控除</h2>
         </div>
 
@@ -305,29 +266,28 @@ tbody tr.rc td:first-child::before {
 
       <div class="card">
         <div class="card-hdr">
-          <div class="icon" style="background:var(--lav-lt);">📈</div>
           <h2>金利設定（5年毎・年率%）</h2>
         </div>
         <div class="rate-note">各5年ブロックの金利を個別設定。変更時は残債ベースで月返済額を再計算します。</div>
         <div class="rate-grid" id="rate-grid"></div>
-        <button class="calc-btn" onclick="calc()">▶ 計算実行</button>
+        <button class="calc-btn" onclick="calc()">計算実行</button>
       </div>
     </div>
 
     <!-- Right: Results -->
     <div>
       <div class="summary-row">
-        <div class="s-pill blue"><h4>初期月返済額</h4><div class="val" id="c-monthly">―</div><div class="sub">1〜5年目</div></div>
-        <div class="s-pill blue"><h4>初期年間総支出</h4><div class="val" id="c-annual">―</div><div class="sub">1年目</div></div>
-        <div class="s-pill mint"><h4>総控除額</h4><div class="val" id="c-deduction">―</div></div>
-        <div class="s-pill blue"><h4>実質総支払額</h4><div class="val" id="c-total">―</div></div>
-        <div class="s-pill sun"><h4>最終年家賃相当</h4><div class="val" id="c-finalrent">―</div></div>
+        <div class="s-pill"><h4>初期月返済額</h4><div class="val" id="c-monthly">―</div><div class="sub">1〜5年目</div></div>
+        <div class="s-pill"><h4>初期年間総支出</h4><div class="val" id="c-annual">―</div><div class="sub">1年目</div></div>
+        <div class="s-pill"><h4>総控除額</h4><div class="val" id="c-deduction">―</div></div>
+        <div class="s-pill"><h4>実質総支払額</h4><div class="val" id="c-total">―</div></div>
+        <div class="s-pill"><h4>最終年家賃相当</h4><div class="val" id="c-finalrent">―</div></div>
       </div>
 
       <div class="tbl-wrap">
         <div class="tbl-hdr">
-          📊 年次詳細計算結果
-          <span class="tag">左端 紫線 = 金利変更年</span>
+          年次詳細計算結果
+          <span class="tag">灰線 = 金利変更年</span>
         </div>
         <div class="tbl-scroll">
           <table>
@@ -348,11 +308,11 @@ tbody tr.rc td:first-child::before {
 
       <div class="analysis">
         <div class="an-card">
-          <h4>📈 家賃相当額の推移</h4>
+          <h4>家賃相当額の推移</h4>
           <div id="trend-content"><span class="note">計算を実行してください</span></div>
         </div>
         <div class="an-card">
-          <h4>📋 投資判断ガイド</h4>
+          <h4>投資判断ガイド</h4>
           <div id="guide-content"><span class="note">計算を実行してください</span></div>
         </div>
       </div>
@@ -483,7 +443,7 @@ function calc() {
     <div class="an-row"><span class="lbl">20年目（${startAge+20}歳）</span><span class="v">${r20?r20.toLocaleString()+'円/月':'―'}</span></div>
     <div class="an-row"><span class="lbl">最終年（${startAge+years}歳）</span><span class="v">${rF.toLocaleString()}円/月</span></div>
     <div class="note">固定資産税: ${mT.toLocaleString()}円/月<br>保険料: ${mI.toLocaleString()}円/月<br>メンテナンス費: ${mM.toLocaleString()}円/月<br><strong>合計固定費: ${(mT+mI+mM).toLocaleString()}円/月</strong></div>
-    <div class="note" style="color:var(--mint-dk)">控除月額効果: ${mD.toLocaleString()}円 × ${dedYrs}年間</div>
+    <div class="note" style="color:var(--fg-2)">控除月額効果: ${mD.toLocaleString()}円 × ${dedYrs}年間</div>
   `;
 
   const finalAge = startAge + years;
@@ -493,12 +453,12 @@ function calc() {
   else{verdict='長期居住で非常にお得な選択肢です。';bc='green';}
 
   document.getElementById('guide-content').innerHTML = `
-    <div class="an-row"><span class="lbl">短期（〜5年）</span><span class="v">${r5&&r5>150000?'❌ 推奨しない':'⚠️ 要検討'}</span></div>
-    <div class="an-row"><span class="lbl">中期（5〜15年）</span><span class="v">${r10&&r10>100000?'⚠️ 慎重に検討':'✅ 合理的選択'}</span></div>
-    <div class="an-row"><span class="lbl">長期（15年〜）</span><span class="v">${r20&&r20>50000?'✅ 有利':'✅ 非常に有利'}</span></div>
+    <div class="an-row"><span class="lbl">短期（〜5年）</span><span class="v">${r5&&r5>150000?'非推奨':'要検討'}</span></div>
+    <div class="an-row"><span class="lbl">中期（5〜15年）</span><span class="v">${r10&&r10>100000?'慎重に検討':'合理的選択'}</span></div>
+    <div class="an-row"><span class="lbl">長期（15年〜）</span><span class="v">${r20&&r20>50000?'有利':'非常に有利'}</span></div>
     <div class="an-row"><span class="lbl">完済時年齢</span><span class="v">${finalAge}歳</span></div>
-    <span class="badge ${bc}">${bc==='green'?'✅':bc==='amber'?'⚡':'⚠️'} ${verdict}</span>
-    <div class="note">${finalAge>65?'⚠️ 定年後も返済が継続する可能性があります。':'✅ 定年前に完済できる見込みです。'}<br>控除期間（${dedYrs}年）中は実質負担が軽減されます。</div>
+    <span class="badge ${bc}">${verdict}</span>
+    <div class="note">${finalAge>65?'定年後も返済が継続する可能性があります。':'定年前に完済できる見込みです。'}<br>控除期間（${dedYrs}年）中は実質負担が軽減されます。</div>
   `;
 }
 

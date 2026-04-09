@@ -5,44 +5,26 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>車リセールシミュレーター</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 :root {
-  --mint: #00C896; --mint-lt: #E0FBF3; --mint-dk: #007A5A;
-  --coral: #FF6B6B; --coral-lt: #FFF0F0; --coral-dk: #C0392B;
-  --sky: #4DA6FF; --sky-lt: #EBF4FF; --sky-dk: #1A5FAC;
-  --sun: #FFB830; --sun-lt: #FFF8E6; --sun-dk: #9A6A00;
-  --lav: #A78BFA; --lav-lt: #F3EFFE; --lav-dk: #5B34C2;
-  --ora: #FF8C42; --ora-lt: #FFF0E6; --ora-dk: #CC5500;
-  --ink: #1E1E2E; --ink2: #3D3D55; --ink3: #6B6B8A;
-  --surface: #F7F6FD; --white: #FFFFFF;
-  --radius: 16px; --radius-sm: 10px;
+  --fg: #0a0a0a; --fg-2: #525252; --fg-3: #a3a3a3;
+  --border: #e5e5e5; --bg: #fafafa; --white: #ffffff;
+  --accent: #0a0a0a; --radius: 8px;
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body {
-  font-family: 'M PLUS Rounded 1c', sans-serif;
-  background: var(--surface);
-  color: var(--ink);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--bg);
+  color: var(--fg);
   font-size: 13px;
   line-height: 1.6;
 }
 .app { padding: 28px; max-width: 1440px; margin: 0 auto; }
 
 .hdr { display: flex; align-items: center; gap: 16px; margin-bottom: 28px; }
-.hdr-badge {
-  display: flex; align-items: center; justify-content: center;
-  width: 52px; height: 52px; border-radius: 18px;
-  background: linear-gradient(135deg, var(--ora) 0%, var(--coral) 100%);
-  font-size: 26px; flex-shrink: 0;
-}
-.hdr-text h1 { font-size: 22px; font-weight: 800; color: var(--ink); letter-spacing: -0.5px; }
-.hdr-text p { font-size: 12px; color: var(--ink3); margin-top: 2px; }
-.hdr-pill {
-  margin-left: auto;
-  background: var(--ora-lt); color: var(--ora-dk);
-  padding: 6px 14px; border-radius: 99px;
-  font-size: 11px; font-weight: 700; letter-spacing: .3px;
-}
+.hdr-text h1 { font-size: 22px; font-weight: 700; color: var(--fg); letter-spacing: -0.5px; }
+.hdr-text p { font-size: 12px; color: var(--fg-3); margin-top: 2px; }
 
 .layout { display: grid; grid-template-columns: 320px 1fr; gap: 20px; align-items: start; }
 
@@ -50,7 +32,7 @@ body {
   background: var(--white);
   border-radius: var(--radius);
   padding: 20px;
-  border: 1.5px solid rgba(100,100,180,0.08);
+  border: 1px solid var(--border);
   margin-bottom: 16px;
 }
 .card:last-child { margin-bottom: 0; }
@@ -58,81 +40,75 @@ body {
 .card-hdr {
   display: flex; align-items: center; gap: 8px;
   margin-bottom: 16px; padding-bottom: 12px;
-  border-bottom: 1.5px dashed rgba(100,100,180,0.12);
+  border-bottom: 1px solid var(--border);
 }
-.card-hdr .icon {
-  width: 28px; height: 28px; border-radius: 8px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 14px; flex-shrink: 0;
-}
-.card-hdr h2 { font-size: 12px; font-weight: 700; color: var(--ink2); letter-spacing: .6px; text-transform: uppercase; }
+.card-hdr h2 { font-size: 12px; font-weight: 600; color: var(--fg-2); letter-spacing: .6px; text-transform: uppercase; }
 
 .sec {
-  font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
-  color: var(--ink3); margin: 14px 0 8px;
+  font-size: 10px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase;
+  color: var(--fg-3); margin: 14px 0 8px;
   display: flex; align-items: center; gap: 6px;
 }
-.sec::after { content:''; flex:1; height:1px; background: rgba(100,100,180,0.1); }
+.sec::after { content:''; flex:1; height:1px; background: var(--border); }
 .sec:first-child { margin-top: 0; }
 
 .ig { margin-bottom: 10px; }
-.ig label { display: block; font-size: 11px; font-weight: 700; color: var(--ink3); margin-bottom: 4px; }
+.ig label { display: block; font-size: 11px; font-weight: 600; color: var(--fg-3); margin-bottom: 4px; }
 .ig-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .ig input {
   width: 100%;
-  background: var(--surface);
-  border: 1.5px solid rgba(100,100,180,0.12);
-  border-radius: var(--radius-sm);
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
   padding: 9px 12px;
-  color: var(--ink);
-  font-family: 'JetBrains Mono', monospace;
+  color: var(--fg);
+  font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
   font-size: 13px; font-weight: 500;
   outline: none;
-  transition: border-color .15s, box-shadow .15s;
+  transition: border-color .15s;
 }
-.ig input:focus { border-color: var(--sky); box-shadow: 0 0 0 3px rgba(77,166,255,.15); }
+.ig input:focus { border-color: var(--fg-3); }
 
 .derived {
   width: 100%;
-  background: var(--sky-lt);
-  border: 1.5px solid rgba(77,166,255,.2);
-  border-radius: var(--radius-sm);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
   padding: 9px 12px;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
   font-size: 13px; font-weight: 700;
-  color: var(--sky-dk);
+  color: var(--fg);
 }
 
 .rate-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 .rate-item {
-  background: var(--ora-lt);
-  border: 1.5px solid rgba(255,140,66,.25);
-  border-radius: var(--radius-sm);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
   padding: 10px 12px;
 }
-.rate-item label { display: block; font-size: 10px; font-weight: 700; color: var(--ora-dk); margin-bottom: 6px; line-height: 1.4; }
+.rate-item label { display: block; font-size: 10px; font-weight: 600; color: var(--fg-2); margin-bottom: 6px; line-height: 1.4; }
 .rate-item input {
   width: 100%; background: transparent; border: none;
-  border-bottom: 2px solid rgba(255,140,66,.4);
+  border-bottom: 2px solid var(--border);
   border-radius: 0; padding: 3px 0;
-  color: var(--ink); font-family: 'JetBrains Mono', monospace;
+  color: var(--fg); font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
   font-size: 15px; font-weight: 700; outline: none;
   transition: border-color .15s;
 }
-.rate-item input:focus { border-bottom-color: var(--ora); }
-.rate-note { font-size: 10px; color: var(--ink3); margin-bottom: 10px; line-height: 1.6; }
+.rate-item input:focus { border-bottom-color: var(--fg-3); }
+.rate-note { font-size: 10px; color: var(--fg-3); margin-bottom: 10px; line-height: 1.6; }
 
 .calc-btn {
   width: 100%; margin-top: 16px; padding: 13px;
-  background: linear-gradient(135deg, var(--ora) 0%, var(--coral) 100%);
-  border: none; border-radius: var(--radius-sm);
-  color: #fff; font-family: 'M PLUS Rounded 1c', sans-serif;
-  font-size: 14px; font-weight: 800; cursor: pointer;
+  background: var(--fg);
+  border: none; border-radius: var(--radius);
+  color: var(--white); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 14px; font-weight: 600; cursor: pointer;
   letter-spacing: .3px;
-  box-shadow: 0 4px 16px rgba(255,140,66,.3);
-  transition: transform .1s, box-shadow .15s;
+  transition: opacity .15s;
 }
-.calc-btn:hover { box-shadow: 0 6px 20px rgba(255,140,66,.4); }
+.calc-btn:hover { opacity: 0.85; }
 .calc-btn:active { transform: scale(.98); }
 
 .summary-row {
@@ -144,112 +120,106 @@ body {
   border-radius: var(--radius);
   padding: 14px 12px;
   text-align: center;
-  border: 1.5px solid rgba(100,100,180,0.08);
-  position: relative; overflow: hidden;
+  border: 1px solid var(--border);
 }
-.s-pill::before {
-  content: '';
-  position: absolute; top: 0; left: 0; right: 0; height: 4px;
-  border-radius: 99px 99px 0 0;
-}
-.s-pill.blue::before  { background: var(--sky); }
-.s-pill.mint::before  { background: var(--mint); }
-.s-pill.sun::before   { background: var(--sun); }
-.s-pill.coral::before { background: var(--coral); }
-.s-pill.ora::before   { background: var(--ora); }
-.s-pill h4 { font-size: 10px; font-weight: 700; color: var(--ink3); margin-bottom: 6px; margin-top: 4px; }
-.s-pill .val { font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 700; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.s-pill .sub { font-size: 10px; color: var(--ink3); margin-top: 2px; }
-.s-pill.mint .val { color: var(--mint-dk); }
-.s-pill.sun  .val { color: var(--sun-dk); }
+.s-pill h4 { font-size: 10px; font-weight: 600; color: var(--fg-3); margin-bottom: 6px; }
+.s-pill .val { font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace; font-size: 13px; font-weight: 700; color: var(--fg); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.s-pill .sub { font-size: 10px; color: var(--fg-3); margin-top: 2px; }
+.s-pill.mint .val { color: var(--fg); }
+.s-pill.sun  .val { color: var(--fg); }
 
 .tbl-wrap {
   background: var(--white); border-radius: var(--radius);
-  border: 1.5px solid rgba(100,100,180,0.08);
+  border: 1px solid var(--border);
   overflow: hidden; margin-bottom: 16px;
 }
 .tbl-hdr {
   display: flex; align-items: center; gap: 8px;
-  padding: 14px 18px; background: var(--surface);
-  border-bottom: 1.5px dashed rgba(100,100,180,0.12);
-  font-size: 11px; font-weight: 700; color: var(--ink2); letter-spacing: .6px; text-transform: uppercase;
+  padding: 14px 18px; background: var(--bg);
+  border-bottom: 1px solid var(--border);
+  font-size: 11px; font-weight: 600; color: var(--fg-2); letter-spacing: .6px; text-transform: uppercase;
 }
 .tbl-hdr .tag {
-  margin-left: auto; background: var(--mint-lt);
-  color: var(--mint-dk); padding: 3px 10px; border-radius: 99px;
-  font-size: 10px; font-weight: 700;
+  margin-left: auto; background: var(--bg);
+  color: var(--fg-2); padding: 3px 10px; border-radius: 99px;
+  font-size: 10px; font-weight: 600;
+  border: 1px solid var(--border);
 }
 .tbl-scroll { max-height: 380px; overflow-y: auto; }
 .tbl-scroll::-webkit-scrollbar { width: 4px; }
-.tbl-scroll::-webkit-scrollbar-track { background: var(--surface); }
-.tbl-scroll::-webkit-scrollbar-thumb { background: rgba(100,100,180,0.2); border-radius: 2px; }
+.tbl-scroll::-webkit-scrollbar-track { background: var(--bg); }
+.tbl-scroll::-webkit-scrollbar-thumb { background: var(--fg-3); border-radius: 2px; }
 table { width: 100%; border-collapse: collapse; font-size: 11.5px; }
 thead th {
-  background: var(--surface); padding: 9px 10px;
-  text-align: right; font-size: 10px; font-weight: 700;
-  letter-spacing: .6px; color: var(--ink3); text-transform: uppercase;
+  background: var(--bg); padding: 9px 10px;
+  text-align: right; font-size: 10px; font-weight: 600;
+  letter-spacing: .6px; color: var(--fg-3); text-transform: uppercase;
   position: sticky; top: 0; z-index: 5;
-  border-bottom: 1px solid rgba(100,100,180,.1);
+  border-bottom: 1px solid var(--border);
 }
 thead th:first-child, thead th:nth-child(2) { text-align: center; }
 tbody td {
   padding: 7px 10px; text-align: right;
-  border-bottom: 1px solid rgba(100,100,180,.06);
-  font-family: 'JetBrains Mono', monospace; font-size: 11px;
+  border-bottom: 1px solid var(--border);
+  font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace; font-size: 11px;
 }
 tbody td:first-child, tbody td:nth-child(2) {
   text-align: center;
-  font-family: 'M PLUS Rounded 1c', sans-serif;
-  font-weight: 700; font-size: 11px; color: var(--ink2);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-weight: 600; font-size: 11px; color: var(--fg-2);
 }
-tbody tr:hover { background: var(--surface); }
-tbody tr.best { background: #E0FBF3; }
-tbody tr.loan-end td { border-bottom: 2px solid rgba(77,166,255,.3); }
-.pos  { color: var(--mint-dk); font-weight: 700; }
-.neg  { color: var(--coral-dk); font-weight: 700; }
-.rcol { color: var(--ora-dk); font-weight: 700; }
-.meq  { color: var(--sun-dk); font-weight: 700; }
-.meq-best { color: var(--mint-dk); font-weight: 700; }
+tbody tr:hover { background: var(--bg); }
+tbody tr.best { background: #f0fdf4; }
+tbody tr.loan-end td { border-bottom: 2px solid var(--border); }
+.pos  { color: #16a34a; font-weight: 700; }
+.neg  { color: #dc2626; font-weight: 700; }
+.rcol { color: var(--fg-2); font-weight: 700; }
+.meq  { color: var(--fg-2); font-weight: 700; }
+.meq-best { color: var(--fg); font-weight: 700; }
 
 .analysis { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .an-card {
   background: var(--white); border-radius: var(--radius); padding: 16px;
-  border: 1.5px solid rgba(100,100,180,0.08);
+  border: 1px solid var(--border);
 }
 .an-card h4 {
-  font-size: 12px; font-weight: 700; color: var(--ink2);
+  font-size: 12px; font-weight: 600; color: var(--fg-2);
   margin-bottom: 12px; padding-bottom: 10px;
-  border-bottom: 1.5px dashed rgba(100,100,180,0.12);
+  border-bottom: 1px solid var(--border);
 }
 .an-row {
   display: flex; justify-content: space-between; align-items: center;
-  padding: 6px 0; border-bottom: 1px solid rgba(100,100,180,.06); font-size: 12px;
+  padding: 6px 0; border-bottom: 1px solid var(--border); font-size: 12px;
 }
 .an-row:last-child { border-bottom: none; }
-.an-row .lbl { color: var(--ink3); }
-.an-row .v { font-family: 'JetBrains Mono', monospace; font-weight: 700; color: var(--ink); }
+.an-row .lbl { color: var(--fg-3); }
+.an-row .v { font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace; font-weight: 700; color: var(--fg); }
 .badge {
   display: inline-flex; align-items: center; gap: 5px;
   padding: 5px 12px; border-radius: 99px;
-  font-size: 11px; font-weight: 700; margin-top: 10px;
+  font-size: 11px; font-weight: 600; margin-top: 10px;
 }
-.badge.green { background: var(--mint-lt); color: var(--mint-dk); }
-.badge.amber { background: var(--sun-lt);  color: var(--sun-dk); }
-.badge.red   { background: var(--coral-lt); color: var(--coral-dk); }
-.note { font-size: 11px; color: var(--ink3); margin-top: 10px; line-height: 1.7; }
-.note strong { color: var(--ink2); }
+.badge.green { background: #f0fdf4; color: #16a34a; }
+.badge.amber { background: #fefce8; color: #a16207; }
+.badge.red   { background: #fef2f2; color: #dc2626; }
+.note { font-size: 11px; color: var(--fg-3); margin-top: 10px; line-height: 1.7; }
+.note strong { color: var(--fg-2); }
 </style>
 </head>
 <body>
+<header style="border-bottom:1px solid #e5e5e5;background:#fff;">
+  <div style="max-width:1440px;margin:0 auto;padding:16px 28px;display:flex;align-items:center;justify-content:space-between;">
+    <a href="index.html" style="font-size:14px;font-weight:700;color:#0a0a0a;text-decoration:none;letter-spacing:-0.5px;">enojun/tools</a>
+    <span style="font-size:13px;color:#a3a3a3;">Car Resale Simulator</span>
+  </div>
+</header>
 <div class="app">
 
   <div class="hdr">
-    <div class="hdr-badge">🚗</div>
     <div class="hdr-text">
       <h1>車リセールシミュレーター</h1>
-      <p>購入費・維持費・残価を考慮した年次詳細分析 ／ 最適売却タイミングを自動判定</p>
+      <p>購入費・維持費・残価を考慮した年次詳細分析 / 最適売却タイミングを自動判定</p>
     </div>
-    <div class="hdr-pill">✦ リセール最適化</div>
   </div>
 
   <div class="layout">
@@ -258,7 +228,6 @@ tbody tr.loan-end td { border-bottom: 2px solid rgba(77,166,255,.3); }
     <div>
       <div class="card">
         <div class="card-hdr">
-          <div class="icon" style="background:var(--ora-lt);">🚘</div>
           <h2>基本情報・年間維持費</h2>
         </div>
 
@@ -270,7 +239,7 @@ tbody tr.loan-end td { border-bottom: 2px solid rgba(77,166,255,.3); }
         <div class="ig"><label>車両購入価格（万円）</label><input type="number" id="carPrice" value="300" oninput="updateBorrowed()"></div>
         <div class="ig-row">
           <div class="ig"><label>頭金（万円）</label><input type="number" id="downPayment" value="50" oninput="updateBorrowed()"></div>
-          <div class="ig"><label>借入金額（万円）<span style="color:var(--sky-dk);font-weight:400;">※自動</span></label><div class="derived" id="borrowedDisplay">250</div></div>
+          <div class="ig"><label>借入金額（万円）<span style="color:var(--fg-3);font-weight:400;">※自動</span></label><div class="derived" id="borrowedDisplay">250</div></div>
         </div>
         <div class="ig-row">
           <div class="ig"><label>ローン金利（年率%）</label><input type="number" id="loanRate" value="3.0" step="0.1" min="0"></div>
@@ -290,12 +259,11 @@ tbody tr.loan-end td { border-bottom: 2px solid rgba(77,166,255,.3); }
 
       <div class="card">
         <div class="card-hdr">
-          <div class="icon" style="background:var(--ora-lt);">📉</div>
           <h2>残価設定（3年毎・年間下落率%）</h2>
         </div>
         <div class="rate-note">各3年ブロックの年間下落率を設定。新車は最初の数年が急落しやすい傾向にあります。</div>
         <div class="rate-grid" id="dep-rate-grid"></div>
-        <button class="calc-btn" onclick="calc()">▶ 計算実行</button>
+        <button class="calc-btn" onclick="calc()">計算実行</button>
       </div>
     </div>
 
@@ -331,7 +299,7 @@ tbody tr.loan-end td { border-bottom: 2px solid rgba(77,166,255,.3); }
 
       <div class="tbl-wrap">
         <div class="tbl-hdr">
-          📊 年次詳細計算結果
+          年次詳細計算結果
           <span class="tag">緑行 = 最適売却タイミング</span>
         </div>
         <div class="tbl-scroll">
@@ -356,11 +324,11 @@ tbody tr.loan-end td { border-bottom: 2px solid rgba(77,166,255,.3); }
 
       <div class="analysis">
         <div class="an-card">
-          <h4>📅 売却タイミング分析</h4>
+          <h4>売却タイミング分析</h4>
           <div id="timing-content"><span class="note">計算を実行してください</span></div>
         </div>
         <div class="an-card">
-          <h4>💰 費用内訳・投資判断</h4>
+          <h4>費用内訳・投資判断</h4>
           <div id="cost-content"><span class="note">計算を実行してください</span></div>
         </div>
       </div>
