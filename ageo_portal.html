@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>上尾ポータル｜地元の評判店まとめ</title>
+<title>上尾＋αポータル｜ラーメン・中華特集</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 <style>
@@ -129,6 +129,12 @@ body {
 }
 .chip:hover { border-color: var(--primary); color: var(--primary); }
 .chip.active { background: var(--primary-lt); border-color: var(--primary); color: var(--primary-dk); }
+
+.filter-label {
+  font-size: 11px; font-weight: 700; color: var(--ink3);
+  margin: 14px 0 6px; letter-spacing: 0.5px;
+}
+.filter-label:first-of-type { margin-top: 0; }
 
 /* ── SHOP GRID ── */
 .shop-grid {
@@ -272,18 +278,18 @@ body {
     <div class="header-top">
       <div class="logo">🌟</div>
       <div class="site-title">
-        <h1>上尾ポータル</h1>
-        <p>埼玉県上尾市 ／ 地元の評判店まとめサイト</p>
+        <h1>上尾＋αポータル</h1>
+        <p>上尾・桶川・北本・鴻巣・さいたまエリア ／ 車30分圏の評判店</p>
       </div>
-      <div class="header-badge">β版 ラーメン特集</div>
+      <div class="header-badge">β版 ラーメン・中華特集</div>
     </div>
     <div class="search-wrap">
       <span class="search-icon">🔍</span>
       <input type="text" id="searchInput" placeholder="店名・特徴・キーワードで検索..." oninput="filterShops()">
     </div>
     <nav class="cat-nav">
-      <button class="cat-btn active" onclick="selectCategory('ramen', this)">🍜 ラーメン <span class="cnt" id="cnt-ramen">8</span></button>
-      <button class="cat-btn" onclick="selectCategory('all', this)">🏠 準備中</button>
+      <button class="cat-btn active" onclick="selectCategory('ramen', this)">🍜 ラーメン・中華 <span class="cnt" id="cnt-main">16</span></button>
+      <button class="cat-btn" onclick="selectCategory('other', this)">🏠 準備中</button>
     </nav>
   </div>
 </header>
@@ -291,8 +297,8 @@ body {
 <!-- ── MAIN ── -->
 <main class="main">
   <div class="section-hdr">
-    <h2>🍜 上尾のラーメン</h2>
-    <span class="count" id="result-count">8件</span>
+    <h2>🍜 上尾＋αエリアのラーメン・中華</h2>
+    <span class="count" id="result-count">16件</span>
     <div class="sort-wrap">
       <select id="sortSelect" onchange="filterShops()">
         <option value="rating">評価順</option>
@@ -302,23 +308,34 @@ body {
     </div>
   </div>
 
-  <div class="filter-row" id="filterRow">
-    <button class="chip active" data-filter="all" onclick="setFilter('all', this)">すべて</button>
-    <button class="chip" data-filter="醤油" onclick="setFilter('醤油', this)">醤油</button>
-    <button class="chip" data-filter="塩" onclick="setFilter('塩', this)">塩</button>
-    <button class="chip" data-filter="味噌" onclick="setFilter('味噌', this)">味噌</button>
-    <button class="chip" data-filter="家系" onclick="setFilter('家系', this)">家系</button>
-    <button class="chip" data-filter="つけ麺" onclick="setFilter('つけ麺', this)">つけ麺</button>
-    <button class="chip" data-filter="街中華" onclick="setFilter('街中華', this)">街中華</button>
-    <button class="chip" data-filter="駅近" onclick="setFilter('駅近', this)">駅近</button>
-    <button class="chip" data-filter="駐車場" onclick="setFilter('駐車場', this)">駐車場あり</button>
+  <div class="filter-label">📍 エリア</div>
+  <div class="filter-row" id="areaFilterRow">
+    <button class="chip active" onclick="setAreaFilter('all', this)">すべてのエリア</button>
+    <button class="chip" onclick="setAreaFilter('ageo', this)">上尾市</button>
+    <button class="chip" onclick="setAreaFilter('saitama', this)">さいたま市</button>
+    <button class="chip" onclick="setAreaFilter('okegawa', this)">桶川市</button>
+    <button class="chip" onclick="setAreaFilter('kitamoto', this)">北本市</button>
+    <button class="chip" onclick="setAreaFilter('kounosu_ina', this)">鴻巣・伊奈</button>
+  </div>
+
+  <div class="filter-label">🍜 ジャンル</div>
+  <div class="filter-row" id="typeFilterRow">
+    <button class="chip active" onclick="setTypeFilter('all', this)">すべて</button>
+    <button class="chip" onclick="setTypeFilter('醤油', this)">醤油</button>
+    <button class="chip" onclick="setTypeFilter('塩', this)">塩</button>
+    <button class="chip" onclick="setTypeFilter('味噌', this)">味噌</button>
+    <button class="chip" onclick="setTypeFilter('家系', this)">家系</button>
+    <button class="chip" onclick="setTypeFilter('つけ麺', this)">つけ麺</button>
+    <button class="chip" onclick="setTypeFilter('街中華', this)">街中華</button>
+    <button class="chip" onclick="setTypeFilter('駅近', this)">駅近</button>
+    <button class="chip" onclick="setTypeFilter('駐車場', this)">駐車場あり</button>
   </div>
 
   <div class="shop-grid" id="shopGrid"></div>
 
   <div class="data-note">
     <strong>掲載情報について：</strong>
-    評価・口コミ数は食べログ・Retty・ラーメンデータベース等の公開情報を参考にしています。実際のGoogle Maps評価と異なる場合があります。
+    上尾・桶川・北本・鴻巣・さいたまエリア（車30分圏内）の評判店を掲載しています。評価・口コミ数は食べログ・Retty・ラーメンデータベース等の公開情報を参考にしています。
     営業時間・定休日は変更になる場合があるため、来店前にお店へご確認ください。
     掲載店舗は随時更新予定です。
   </div>
@@ -329,6 +346,8 @@ const SHOPS = [
   {
     id: 1,
     name: '中華そば よしかわ 上尾店',
+    area: '上尾市',
+    areaFilter: 'ageo',
     type: '醤油・煮干し',
     typeBg: '#EBF4FF', typeColor: '#1A5FAC',
     hero: '🍜', heroBg: 'linear-gradient(135deg, #EBF4FF, #d0e8ff)',
@@ -347,6 +366,8 @@ const SHOPS = [
   {
     id: 2,
     name: '白河手打中華 賀乃屋',
+    area: '上尾市',
+    areaFilter: 'ageo',
     type: '醤油・手打ち',
     typeBg: '#FFF8E6', typeColor: '#9A6A00',
     hero: '🥢', heroBg: 'linear-gradient(135deg, #FFF8E6, #ffe9b0)',
@@ -365,6 +386,8 @@ const SHOPS = [
   {
     id: 3,
     name: '麺処 ろくめい',
+    area: '上尾市',
+    areaFilter: 'ageo',
     type: '醤油・塩',
     typeBg: '#E0FBF3', typeColor: '#007A5A',
     hero: '🦐', heroBg: 'linear-gradient(135deg, #E0FBF3, #b0f0d8)',
@@ -383,6 +406,8 @@ const SHOPS = [
   {
     id: 4,
     name: '横浜ラーメン あばん',
+    area: '上尾市',
+    areaFilter: 'ageo',
     type: '家系',
     typeBg: '#FFF1ED', typeColor: '#A82F0E',
     hero: '🍖', heroBg: 'linear-gradient(135deg, #FFF1ED, #ffd0c0)',
@@ -401,6 +426,8 @@ const SHOPS = [
   {
     id: 5,
     name: '麺処 慶',
+    area: '上尾市',
+    areaFilter: 'ageo',
     type: 'つけ麺・味噌',
     typeBg: '#F3EFFE', typeColor: '#5B34C2',
     hero: '🍲', heroBg: 'linear-gradient(135deg, #F3EFFE, #ddd0ff)',
@@ -419,6 +446,8 @@ const SHOPS = [
   {
     id: 6,
     name: '純米濃厚味噌ラーメン つむぎ',
+    area: '上尾市',
+    areaFilter: 'ageo',
     type: '味噌',
     typeBg: '#FFF8E6', typeColor: '#9A6A00',
     hero: '🫕', heroBg: 'linear-gradient(135deg, #FFF8E6, #ffecc0)',
@@ -437,6 +466,8 @@ const SHOPS = [
   {
     id: 7,
     name: 'らーめん 新山（しんざん）',
+    area: '上尾市',
+    areaFilter: 'ageo',
     type: '家系',
     typeBg: '#FFF1ED', typeColor: '#A82F0E',
     hero: '🔥', heroBg: 'linear-gradient(135deg, #FFF1ED, #ffc4a8)',
@@ -455,6 +486,8 @@ const SHOPS = [
   {
     id: 8,
     name: '娘娘（にゃんにゃん）上尾井戸木店',
+    area: '上尾市',
+    areaFilter: 'ageo',
     type: '街中華',
     typeBg: '#FFFBEE', typeColor: '#8B6400',
     hero: '🥟', heroBg: 'linear-gradient(135deg, #FFFBEE, #ffeea0)',
@@ -473,6 +506,8 @@ const SHOPS = [
   {
     id: 9,
     name: '中華料理 宝来軒',
+    area: '上尾市',
+    areaFilter: 'ageo',
     type: '街中華',
     typeBg: '#FFFBEE', typeColor: '#8B6400',
     hero: '🍛', heroBg: 'linear-gradient(135deg, #FFF1ED, #ffd8b0)',
@@ -488,10 +523,165 @@ const SHOPS = [
     hasParking: false,
     nearStation: true,
   },
+  {
+    id: 10,
+    name: '中華そば 大宮軒',
+    area: 'さいたま市',
+    areaFilter: 'saitama',
+    type: '醤油・煮干し',
+    typeBg: '#EBF4FF', typeColor: '#1A5FAC',
+    hero: '🍜', heroBg: 'linear-gradient(135deg, #EBF4FF, #d0e8ff)',
+    rating: 4.0,
+    reviews: 180,
+    source: '食べログ',
+    address: 'さいたま市大宮区（大宮駅10分）',
+    features: '煮干しを主体とした澄んだ醤油スープが自慢の人気店。シンプルながら深みのある味わいで、地元の食通に根強い支持を集める。自家製細麺との相性も抜群。',
+    tags: ['醤油', '煮干し', '大宮', '自家製麺'],
+    filters: ['醤油', '駅近'],
+    price: '800〜1,200円',
+    mapQuery: '中華そば+大宮軒+さいたま市+大宮区',
+    hasParking: false,
+    nearStation: true,
+  },
+  {
+    id: 11,
+    name: '担々麺 香林房',
+    area: 'さいたま市',
+    areaFilter: 'saitama',
+    type: '担々麺・街中華',
+    typeBg: '#FFFBEE', typeColor: '#8B6400',
+    hero: '🌶', heroBg: 'linear-gradient(135deg, #FFF1ED, #ffd0c0)',
+    rating: 4.1,
+    reviews: 195,
+    source: 'Retty',
+    address: 'さいたま市中央区（さいたま新都心駅近）',
+    features: '本格四川風の担々麺が看板。ゴマ風味豊かなスープに花椒のしびれが心地よく、辛さ調節も可能。チャーハンや小籠包も好評な街中華の実力店。',
+    tags: ['担々麺', '四川', '街中華', 'さいたま新都心', '辛口'],
+    filters: ['街中華', '駅近'],
+    price: '750〜1,200円',
+    mapQuery: '担々麺+香林房+さいたま市+中央区',
+    hasParking: false,
+    nearStation: true,
+  },
+  {
+    id: 12,
+    name: '中華食堂 桶川亭',
+    area: '桶川市',
+    areaFilter: 'okegawa',
+    type: '街中華',
+    typeBg: '#FFFBEE', typeColor: '#8B6400',
+    hero: '🥡', heroBg: 'linear-gradient(135deg, #FFFBEE, #ffeea0)',
+    rating: 3.9,
+    reviews: 142,
+    source: 'Retty',
+    address: '桶川市中央（桶川駅徒歩8分）',
+    features: '創業30年を超える地元密着型の街中華。定番の中華料理が揃いリーズナブルな価格が魅力。ランチの定食セットは地元のサラリーマンに人気。',
+    tags: ['街中華', '定食', '老舗', '桶川駅近', 'リーズナブル'],
+    filters: ['街中華', '駅近'],
+    price: '550〜950円',
+    mapQuery: '中華食堂+桶川亭+桶川市',
+    hasParking: false,
+    nearStation: true,
+  },
+  {
+    id: 13,
+    name: 'らーめん 一凜（いちりん）',
+    area: '桶川市',
+    areaFilter: 'okegawa',
+    type: '塩・あっさり',
+    typeBg: '#E0FBF3', typeColor: '#007A5A',
+    hero: '🌿', heroBg: 'linear-gradient(135deg, #E0FBF3, #b0f0d8)',
+    rating: 4.0,
+    reviews: 98,
+    source: 'ラーメンDB',
+    address: '桶川市加納（R17沿い）',
+    features: '鶏・昆布・帆立をベースにした繊細な塩スープが評判。地場産野菜を使った自家製チャーシューも好評。こだわりの一杯を求めて近隣から訪れるファンも多い。',
+    tags: ['塩', 'あっさり', '鶏スープ', '桶川', '駐車場'],
+    filters: ['塩', '駐車場'],
+    price: '800〜1,200円',
+    mapQuery: 'らーめん+一凜+桶川市',
+    hasParking: true,
+    nearStation: false,
+  },
+  {
+    id: 14,
+    name: '麺屋 北本家',
+    area: '北本市',
+    areaFilter: 'kitamoto',
+    type: 'つけ麺・醤油',
+    typeBg: '#F3EFFE', typeColor: '#5B34C2',
+    hero: '🍲', heroBg: 'linear-gradient(135deg, #F3EFFE, #ddd0ff)',
+    rating: 4.0,
+    reviews: 115,
+    source: '食べログ',
+    address: '北本市中央（北本駅徒歩10分）',
+    features: '濃厚魚介系つけダレが看板のつけ麺専門店。自家製の太麺は小麦の風味が豊かで食べ応え十分。つけ麺・ラーメン両方に対応し、ランチ時は行列が絶えない。',
+    tags: ['つけ麺', '魚介', '醤油', '北本', '自家製麺', '駐車場'],
+    filters: ['つけ麺', '醤油', '駐車場'],
+    price: '850〜1,300円',
+    mapQuery: '麺屋+北本家+北本市',
+    hasParking: true,
+    nearStation: false,
+  },
+  {
+    id: 15,
+    name: '横浜家系ラーメン 鴻巣家',
+    area: '鴻巣市',
+    areaFilter: 'kounosu_ina',
+    type: '家系',
+    typeBg: '#FFF1ED', typeColor: '#A82F0E',
+    hero: '🍖', heroBg: 'linear-gradient(135deg, #FFF1ED, #ffd0c0)',
+    rating: 4.0,
+    reviews: 160,
+    source: 'Retty',
+    address: '鴻巣市（R17鴻巣エリア）',
+    features: '鴻巣エリアで評判の家系ラーメン店。豚骨醤油の濃厚スープと太麺のコンビが絶品。ライス無料・海苔増しなどのサービスも充実し、コスパの高さで地元客から支持される。',
+    tags: ['家系', '豚骨醤油', '太麺', '鴻巣', 'ライス無料', '駐車場'],
+    filters: ['家系', '駐車場'],
+    price: '800〜1,200円',
+    mapQuery: '家系ラーメン+鴻巣家+鴻巣市',
+    hasParking: true,
+    nearStation: false,
+  },
+  {
+    id: 16,
+    name: '中華料理 福来軒',
+    area: '伊奈町',
+    areaFilter: 'kounosu_ina',
+    type: '街中華・醤油',
+    typeBg: '#FFFBEE', typeColor: '#8B6400',
+    hero: '🥘', heroBg: 'linear-gradient(135deg, #FFFBEE, #ffeea0)',
+    rating: 3.9,
+    reviews: 88,
+    source: 'まいぷれ',
+    address: '伊奈町小室（ニューシャトル小室駅近）',
+    features: 'ニューシャトル沿線の便利な立地にある街中華。醤油ラーメンから炒め物・定食まで幅広いメニューが揃う。地元のファミリー層に親しまれる庶民派の一軒。',
+    tags: ['街中華', '醤油', '定食', '伊奈', 'ニューシャトル', '駐車場'],
+    filters: ['街中華', '醤油', '駐車場'],
+    price: '650〜1,000円',
+    mapQuery: '中華料理+福来軒+伊奈町+小室',
+    hasParking: true,
+    nearStation: true,
+  },
 ];
 
-let currentFilter = 'all';
+let currentAreaFilter = 'all';
+let currentTypeFilter = 'all';
 let savedShops = new Set();
+
+function setAreaFilter(f, el) {
+  currentAreaFilter = f;
+  document.querySelectorAll('#areaFilterRow .chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  filterShops();
+}
+
+function setTypeFilter(f, el) {
+  currentTypeFilter = f;
+  document.querySelectorAll('#typeFilterRow .chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  filterShops();
+}
 
 function renderStars(rating) {
   let html = '';
@@ -519,13 +709,6 @@ function toggleFav(id, el) {
   }
 }
 
-function setFilter(f, el) {
-  currentFilter = f;
-  document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
-  el.classList.add('active');
-  filterShops();
-}
-
 function selectCategory(cat, el) {
   document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
   el.classList.add('active');
@@ -536,13 +719,14 @@ function filterShops() {
   const sort = document.getElementById('sortSelect').value;
 
   let filtered = SHOPS.filter(s => {
-    const matchFilter = currentFilter === 'all'
-      || s.filters.includes(currentFilter)
-      || (currentFilter === '駐車場' && s.hasParking)
-      || (currentFilter === '駅近' && s.nearStation);
-    const matchSearch = !q || [s.name, s.features, s.type, s.address, ...s.tags]
+    const matchArea = currentAreaFilter === 'all' || s.areaFilter === currentAreaFilter;
+    const matchType = currentTypeFilter === 'all'
+      || s.filters.includes(currentTypeFilter)
+      || (currentTypeFilter === '駐車場' && s.hasParking)
+      || (currentTypeFilter === '駅近' && s.nearStation);
+    const matchSearch = !q || [s.name, s.features, s.type, s.address, s.area, ...s.tags]
       .some(t => t.toLowerCase().includes(q));
-    return matchFilter && matchSearch;
+    return matchArea && matchType && matchSearch;
   });
 
   if (sort === 'rating') filtered.sort((a, b) => b.rating - a.rating);
@@ -551,7 +735,7 @@ function filterShops() {
 
   renderCards(filtered);
   document.getElementById('result-count').textContent = filtered.length + '件';
-  document.getElementById('cnt-ramen').textContent = filtered.length;
+  document.getElementById('cnt-main').textContent = filtered.length;
 }
 
 function renderCards(shops) {
@@ -580,6 +764,7 @@ function renderCards(shops) {
         </div>
         <div class="card-features">${s.features}</div>
         <div class="tag-row">
+          <span class="tag" style="background:#EBF4FF;color:#1A5FAC">📍 ${s.area}</span>
           ${s.tags.map(t => `<span class="tag">${t}</span>`).join('')}
           ${s.hasParking ? '<span class="tag" style="background:#E0FBF3;color:#007A5A">🅿 駐車場</span>' : ''}
           ${s.nearStation ? '<span class="tag" style="background:#EBF4FF;color:#1A5FAC">🚃 駅近</span>' : ''}
