@@ -3,405 +3,413 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>enojun Tools - シミュレーター＆ポータル</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<title>enojun tools</title>
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
 :root {
-  --mint: #00C896; --mint-lt: #E0FBF3; --mint-dk: #007A5A;
-  --coral: #FF6B6B; --coral-lt: #FFF0F0; --coral-dk: #C0392B;
-  --sky: #4DA6FF; --sky-lt: #EBF4FF; --sky-dk: #1A5FAC;
-  --sun: #FFB830; --sun-lt: #FFF8E6; --sun-dk: #9A6A00;
-  --lav: #A78BFA; --lav-lt: #F3EFFE; --lav-dk: #5B34C2;
-  --ink: #1E1E2E; --ink2: #3D3D55; --ink3: #6B6B8A;
-  --surface: #F7F6FD; --white: #FFFFFF;
-  --radius: 20px; --radius-sm: 12px;
+  --fg: #0a0a0a;
+  --fg-2: #525252;
+  --fg-3: #a3a3a3;
+  --border: #e5e5e5;
+  --bg: #fafafa;
+  --white: #ffffff;
+  --accent: #0a0a0a;
+  --radius: 8px;
 }
+
 * { box-sizing: border-box; margin: 0; padding: 0; }
+
 body {
-  font-family: 'M PLUS Rounded 1c', sans-serif;
-  background: var(--surface);
-  color: var(--ink);
-  font-size: 14px;
-  line-height: 1.6;
-  min-height: 100vh;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: var(--bg);
+  color: var(--fg);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-/* Hero */
-.hero {
-  background: linear-gradient(135deg, var(--mint) 0%, var(--sky) 50%, var(--lav) 100%);
-  padding: 60px 28px 48px;
-  text-align: center;
-  position: relative;
-  overflow: hidden;
-}
-.hero::before {
-  content: '';
-  position: absolute; top: -80px; right: -60px;
-  width: 300px; height: 300px;
-  background: rgba(255,255,255,0.08);
-  border-radius: 50%;
-}
-.hero::after {
-  content: '';
-  position: absolute; bottom: -100px; left: -40px;
-  width: 350px; height: 350px;
-  background: rgba(255,255,255,0.05);
-  border-radius: 50%;
-}
-.hero * { position: relative; z-index: 1; }
-.hero-icon { font-size: 48px; margin-bottom: 12px; }
-.hero h1 {
-  font-size: 32px; font-weight: 800; color: #fff;
-  letter-spacing: -1px; margin-bottom: 8px;
-}
-.hero p {
-  font-size: 14px; color: rgba(255,255,255,0.85);
-  max-width: 480px; margin: 0 auto;
-}
-
-/* Main content */
-.main { max-width: 960px; margin: -32px auto 0; padding: 0 20px 60px; position: relative; z-index: 2; }
-
-/* Section */
-.section-title {
-  font-size: 11px; font-weight: 700; letter-spacing: 1.5px;
-  text-transform: uppercase; color: var(--ink3);
-  margin: 36px 0 16px;
-  display: flex; align-items: center; gap: 10px;
-}
-.section-title::after { content:''; flex:1; height:1px; background: rgba(100,100,180,0.12); }
-
-/* App cards grid */
-.app-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 16px;
-}
-
-/* App card */
-.app-card {
+/* ── Header ── */
+.header {
+  border-bottom: 1px solid var(--border);
   background: var(--white);
-  border-radius: var(--radius);
-  border: 1.5px solid rgba(100,100,180,0.08);
-  overflow: hidden;
-  transition: transform .15s, box-shadow .15s;
-  text-decoration: none;
-  color: inherit;
+}
+.header-inner {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 20px 24px;
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
 }
-.app-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 12px 32px rgba(100,100,180,0.12);
+.logo {
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  color: var(--fg);
 }
+.header-links {
+  display: flex;
+  gap: 24px;
+}
+.header-links a {
+  font-size: 13px;
+  color: var(--fg-2);
+  text-decoration: none;
+  transition: color .15s;
+}
+.header-links a:hover { color: var(--fg); }
 
-.card-top {
-  padding: 28px 24px 20px;
-  position: relative;
+/* ── Hero ── */
+.hero {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 80px 24px 64px;
 }
-.card-top::before {
-  content: '';
-  position: absolute; top: 0; left: 0; right: 0; height: 4px;
-}
-.card-top.mint::before { background: linear-gradient(90deg, var(--mint), var(--sky)); }
-.card-top.sky::before { background: linear-gradient(90deg, var(--sky), var(--lav)); }
-.card-top.sun::before { background: linear-gradient(90deg, var(--sun), var(--coral)); }
-.card-top.lav::before { background: linear-gradient(90deg, var(--lav), var(--mint)); }
-.card-top.coral::before { background: linear-gradient(90deg, var(--coral), var(--sun)); }
-
-.card-icon {
-  width: 48px; height: 48px;
-  border-radius: 14px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 24px;
+.hero h1 {
+  font-size: 40px;
+  font-weight: 700;
+  letter-spacing: -1.5px;
+  line-height: 1.15;
+  color: var(--fg);
   margin-bottom: 16px;
 }
-.card-icon.mint { background: var(--mint-lt); }
-.card-icon.sky { background: var(--sky-lt); }
-.card-icon.sun { background: var(--sun-lt); }
-.card-icon.lav { background: var(--lav-lt); }
-.card-icon.coral { background: var(--coral-lt); }
-
-.card-title {
-  font-size: 17px; font-weight: 800; color: var(--ink);
-  margin-bottom: 8px; letter-spacing: -0.3px;
-}
-.card-desc {
-  font-size: 12px; color: var(--ink3); line-height: 1.7;
-  flex: 1;
+.hero p {
+  font-size: 16px;
+  color: var(--fg-2);
+  line-height: 1.7;
+  max-width: 520px;
 }
 
-.card-bottom {
-  padding: 12px 24px;
-  border-top: 1px solid rgba(100,100,180,0.06);
-  display: flex; align-items: center; justify-content: space-between;
-}
-.card-tag {
-  font-size: 10px; font-weight: 700; letter-spacing: .5px;
-  padding: 4px 10px; border-radius: 99px;
-}
-.card-tag.mint { background: var(--mint-lt); color: var(--mint-dk); }
-.card-tag.sky { background: var(--sky-lt); color: var(--sky-dk); }
-.card-tag.sun { background: var(--sun-lt); color: var(--sun-dk); }
-.card-tag.lav { background: var(--lav-lt); color: var(--lav-dk); }
-.card-tag.coral { background: var(--coral-lt); color: var(--coral-dk); }
-
-.card-arrow {
-  width: 28px; height: 28px; border-radius: 50%;
-  background: var(--surface);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 14px; color: var(--ink3);
-  transition: background .15s, color .15s;
-}
-.app-card:hover .card-arrow {
-  background: var(--mint); color: #fff;
+/* ── Grid ── */
+.content {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 0 24px 80px;
 }
 
-/* Download banner */
-.dl-banner {
-  background: linear-gradient(135deg, var(--ink) 0%, var(--ink2) 100%);
+.label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--fg-3);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
   border-radius: var(--radius);
-  padding: 28px 32px;
-  display: flex; align-items: center; gap: 20px;
-  margin-top: 16px;
-  text-decoration: none;
-  color: #fff;
-  transition: transform .15s, box-shadow .15s;
-  position: relative;
   overflow: hidden;
-}
-.dl-banner::before {
-  content: '';
-  position: absolute; top: -30px; right: -30px;
-  width: 120px; height: 120px;
-  background: rgba(0,200,150,0.15);
-  border-radius: 50%;
-}
-.dl-banner:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 12px 32px rgba(30,30,46,0.3);
-}
-.dl-banner * { position: relative; z-index: 1; }
-.dl-icon { font-size: 36px; flex-shrink: 0; }
-.dl-text { flex: 1; }
-.dl-text h3 { font-size: 16px; font-weight: 800; margin-bottom: 4px; }
-.dl-text p { font-size: 12px; color: rgba(255,255,255,0.6); }
-.dl-btn-sm {
-  background: linear-gradient(135deg, var(--mint), var(--sky));
-  padding: 10px 22px; border-radius: var(--radius-sm);
-  font-size: 13px; font-weight: 800; color: #fff;
-  white-space: nowrap;
-  box-shadow: 0 4px 16px rgba(0,200,150,0.3);
+  margin-bottom: 48px;
 }
 
-/* URL list */
-.url-list {
+.grid-item {
   background: var(--white);
+  padding: 28px 24px;
+  text-decoration: none;
+  color: inherit;
+  transition: background .15s;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.grid-item:hover {
+  background: var(--bg);
+}
+
+.grid-icon {
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.grid-icon svg {
+  width: 18px;
+  height: 18px;
+  stroke: var(--fg-2);
+  fill: none;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.grid-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--fg);
+  letter-spacing: -0.2px;
+}
+.grid-desc {
+  font-size: 13px;
+  color: var(--fg-3);
+  line-height: 1.6;
+}
+.grid-link {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--fg-2);
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.grid-item:hover .grid-link { color: var(--fg); }
+.grid-link svg {
+  width: 12px; height: 12px;
+  stroke: currentColor; fill: none;
+  stroke-width: 2;
+}
+
+/* ── Download row ── */
+.dl-row {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  background: var(--white);
+  border: 1px solid var(--border);
   border-radius: var(--radius);
-  border: 1.5px solid rgba(100,100,180,0.08);
-  overflow: hidden;
+  padding: 20px 24px;
+  margin-bottom: 48px;
+  text-decoration: none;
+  color: inherit;
+  transition: border-color .15s;
 }
-.url-list-hdr {
-  padding: 14px 20px;
-  background: var(--surface);
-  border-bottom: 1.5px dashed rgba(100,100,180,0.12);
-  font-size: 11px; font-weight: 700; color: var(--ink2);
-  letter-spacing: .6px; text-transform: uppercase;
-  display: flex; align-items: center; gap: 8px;
+.dl-row:hover {
+  border-color: var(--fg-3);
 }
-.url-row {
-  display: flex; align-items: center; gap: 12px;
-  padding: 12px 20px;
-  border-bottom: 1px solid rgba(100,100,180,0.06);
-  transition: background .1s;
-}
-.url-row:last-child { border-bottom: none; }
-.url-row:hover { background: var(--surface); }
-.url-num {
-  width: 24px; height: 24px; border-radius: 6px;
-  background: var(--surface);
-  display: flex; align-items: center; justify-content: center;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 11px; font-weight: 700; color: var(--ink3);
+.dl-row-icon {
+  width: 40px; height: 40px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   flex-shrink: 0;
 }
-.url-icon { font-size: 18px; flex-shrink: 0; }
-.url-info { flex: 1; min-width: 0; }
-.url-name { font-size: 13px; font-weight: 700; color: var(--ink); }
-.url-path {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 11px; color: var(--ink3);
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+.dl-row-icon svg {
+  width: 18px; height: 18px;
+  stroke: var(--fg-2); fill: none;
+  stroke-width: 1.5;
+  stroke-linecap: round; stroke-linejoin: round;
 }
-.url-open {
-  font-size: 10px; font-weight: 700; color: var(--sky-dk);
-  background: var(--sky-lt); padding: 4px 12px; border-radius: 99px;
-  text-decoration: none; flex-shrink: 0;
-  transition: background .15s;
+.dl-row-text { flex: 1; }
+.dl-row-text h3 {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--fg);
+  margin-bottom: 2px;
 }
-.url-open:hover { background: var(--sky); color: #fff; }
+.dl-row-text p {
+  font-size: 13px;
+  color: var(--fg-3);
+}
+.dl-row-btn {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--white);
+  background: var(--fg);
+  padding: 8px 16px;
+  border-radius: 6px;
+  flex-shrink: 0;
+  transition: opacity .15s;
+}
+.dl-row:hover .dl-row-btn { opacity: 0.8; }
 
-/* Footer */
+/* ── URL table ── */
+.url-table {
+  width: 100%;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+.url-table th {
+  text-align: left;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--fg-3);
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg);
+}
+.url-table td {
+  padding: 12px 20px;
+  font-size: 13px;
+  border-bottom: 1px solid var(--border);
+  color: var(--fg-2);
+}
+.url-table tr:last-child td { border-bottom: none; }
+.url-table tr:hover td { background: var(--bg); }
+.url-table .name { font-weight: 500; color: var(--fg); }
+.url-table .path {
+  font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+  font-size: 12px;
+  color: var(--fg-3);
+}
+.url-table a {
+  color: var(--fg-2);
+  text-decoration: underline;
+  text-decoration-color: var(--border);
+  text-underline-offset: 2px;
+  transition: color .15s;
+}
+.url-table a:hover {
+  color: var(--fg);
+  text-decoration-color: var(--fg-3);
+}
+
+/* ── Footer ── */
 .footer {
+  border-top: 1px solid var(--border);
   text-align: center;
-  padding: 20px; font-size: 11px; color: var(--ink3);
+  padding: 24px;
+  font-size: 12px;
+  color: var(--fg-3);
 }
 
-@media (max-width: 600px) {
-  .hero { padding: 40px 20px 36px; }
-  .hero h1 { font-size: 24px; }
-  .main { padding: 0 12px 40px; }
-  .app-grid { grid-template-columns: 1fr; }
-  .dl-banner { flex-direction: column; text-align: center; padding: 24px 20px; }
-  .url-path { display: none; }
+/* ── Responsive ── */
+@media (max-width: 720px) {
+  .grid { grid-template-columns: 1fr; }
+  .hero h1 { font-size: 28px; }
+  .hero { padding: 48px 24px 40px; }
+  .header-links { display: none; }
+  .dl-row { flex-direction: column; align-items: stretch; text-align: center; }
+  .dl-row-icon { align-self: center; }
+  .url-table .path { display: none; }
 }
 </style>
 </head>
 <body>
 
-<!-- Hero -->
-<div class="hero">
-  <div class="hero-icon">⚡</div>
-  <h1>enojun Tools</h1>
-  <p>ライフプランニングに役立つシミュレーター＆ポータル集</p>
-</div>
+<header class="header">
+  <div class="header-inner">
+    <div class="logo">enojun/tools</div>
+    <nav class="header-links">
+      <a href="housing_loan_simulator.html">Housing Loan</a>
+      <a href="car_resale_simulator.html">Car Resale</a>
+      <a href="ageo_portal.html">Ageo Portal</a>
+      <a href="retirement_simulator.html">Retirement</a>
+      <a href="download.html">Download</a>
+    </nav>
+  </div>
+</header>
 
-<div class="main">
+<section class="hero">
+  <h1>ライフプランを、<br>シンプルに。</h1>
+  <p>住宅ローン・車の売却・老後の資金計画。暮らしの大きな判断をサポートするツール集です。</p>
+</section>
 
-  <!-- Simulators -->
-  <div class="section-title">シミュレーター</div>
-  <div class="app-grid">
+<div class="content">
 
-    <a href="housing_loan_simulator.html" class="app-card">
-      <div class="card-top mint">
-        <div class="card-icon mint">🏠</div>
-        <div class="card-title">住宅ローンシミュレーター</div>
-        <div class="card-desc">借入条件・住宅ローン控除・5年毎の変動金利を考慮した年次詳細分析。最大50年の返済計画を可視化。</div>
+  <div class="label">Tools</div>
+  <div class="grid">
+
+    <a href="housing_loan_simulator.html" class="grid-item">
+      <div class="grid-icon">
+        <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
       </div>
-      <div class="card-bottom">
-        <span class="card-tag mint">変動金利対応</span>
-        <span class="card-arrow">→</span>
-      </div>
+      <div class="grid-title">住宅ローン</div>
+      <div class="grid-desc">変動金利・控除・売却を考慮した年次シミュレーション</div>
+      <span class="grid-link">Open <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
     </a>
 
-    <a href="car_resale_simulator.html" class="app-card">
-      <div class="card-top sky">
-        <div class="card-icon sky">🚗</div>
-        <div class="card-title">車リセールシミュレーター</div>
-        <div class="card-desc">新車・中古車の購入から売却までの実質コストを計算。リセールバリューを考慮した車選びをサポート。</div>
+    <a href="car_resale_simulator.html" class="grid-item">
+      <div class="grid-icon">
+        <svg viewBox="0 0 24 24"><rect x="1" y="3" width="15" height="13" rx="2"/><polygon points="16 8 20 3 23 3 23 16 20 16 16 11 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
       </div>
-      <div class="card-bottom">
-        <span class="card-tag sky">リセール分析</span>
-        <span class="card-arrow">→</span>
-      </div>
+      <div class="grid-title">車リセール</div>
+      <div class="grid-desc">リセールバリューを含めた実質コストの比較分析</div>
+      <span class="grid-link">Open <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
     </a>
 
-    <a href="retirement_simulator.html" class="app-card">
-      <div class="card-top lav">
-        <div class="card-icon lav">🌅</div>
-        <div class="card-title">老後資金シミュレーター</div>
-        <div class="card-desc">退職後に必要な資金を年金・貯蓄・投資を含めて試算。インフレ率も考慮した現実的なプランニング。</div>
+    <a href="retirement_simulator.html" class="grid-item">
+      <div class="grid-icon">
+        <svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
       </div>
-      <div class="card-bottom">
-        <span class="card-tag lav">老後対策</span>
-        <span class="card-arrow">→</span>
-      </div>
+      <div class="grid-title">老後資金</div>
+      <div class="grid-desc">年金・貯蓄・投資を含む退職後の資金シミュレーション</div>
+      <span class="grid-link">Open <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
     </a>
 
   </div>
 
-  <!-- Portal -->
-  <div class="section-title">ポータル</div>
-  <div class="app-grid">
-
-    <a href="ageo_portal.html" class="app-card">
-      <div class="card-top sun">
-        <div class="card-icon sun">🍜</div>
-        <div class="card-title">上尾+αポータル</div>
-        <div class="card-desc">上尾市周辺のラーメン・中華の名店ガイド。車30分圏内のエリアをカバーした食べ歩きマップ。</div>
+  <div class="label">Portal</div>
+  <div class="grid" style="grid-template-columns:1fr;">
+    <a href="ageo_portal.html" class="grid-item" style="flex-direction:row;align-items:center;gap:20px;">
+      <div class="grid-icon">
+        <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
       </div>
-      <div class="card-bottom">
-        <span class="card-tag sun">グルメガイド</span>
-        <span class="card-arrow">→</span>
+      <div style="flex:1;">
+        <div class="grid-title">上尾+α ポータル</div>
+        <div class="grid-desc">上尾市周辺のラーメン・中華の名店ガイド。車30分圏内をカバー。</div>
       </div>
+      <span class="grid-link">Open <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
     </a>
-
   </div>
 
-  <!-- Android App Download -->
-  <div class="section-title">アプリ</div>
-  <a href="download.html" class="dl-banner">
-    <div class="dl-icon">📱</div>
-    <div class="dl-text">
-      <h3>住宅ローンシミュレーター Android版</h3>
-      <p>スマートフォンでいつでもシミュレーション。APKダウンロード（25KB）</p>
+  <div class="label">App</div>
+  <a href="download.html" class="dl-row">
+    <div class="dl-row-icon">
+      <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
     </div>
-    <div class="dl-btn-sm">ダウンロード →</div>
+    <div class="dl-row-text">
+      <h3>住宅ローンシミュレーター for Android</h3>
+      <p>APKダウンロード &mdash; 25KB / Android 7.0+</p>
+    </div>
+    <div class="dl-row-btn">Download</div>
   </a>
 
-  <!-- URL List -->
-  <div class="section-title">全ページURL一覧</div>
-  <div class="url-list">
-    <div class="url-list-hdr">📋 サイトマップ</div>
-    <div class="url-row">
-      <span class="url-num">1</span>
-      <span class="url-icon">⚡</span>
-      <div class="url-info">
-        <div class="url-name">ポータル（このページ）</div>
-        <div class="url-path">index.html</div>
-      </div>
-      <a href="index.html" class="url-open">開く</a>
-    </div>
-    <div class="url-row">
-      <span class="url-num">2</span>
-      <span class="url-icon">🏠</span>
-      <div class="url-info">
-        <div class="url-name">住宅ローンシミュレーター</div>
-        <div class="url-path">housing_loan_simulator.html</div>
-      </div>
-      <a href="housing_loan_simulator.html" class="url-open">開く</a>
-    </div>
-    <div class="url-row">
-      <span class="url-num">3</span>
-      <span class="url-icon">🚗</span>
-      <div class="url-info">
-        <div class="url-name">車リセールシミュレーター</div>
-        <div class="url-path">car_resale_simulator.html</div>
-      </div>
-      <a href="car_resale_simulator.html" class="url-open">開く</a>
-    </div>
-    <div class="url-row">
-      <span class="url-num">4</span>
-      <span class="url-icon">🍜</span>
-      <div class="url-info">
-        <div class="url-name">上尾+αポータル</div>
-        <div class="url-path">ageo_portal.html</div>
-      </div>
-      <a href="ageo_portal.html" class="url-open">開く</a>
-    </div>
-    <div class="url-row">
-      <span class="url-num">5</span>
-      <span class="url-icon">🌅</span>
-      <div class="url-info">
-        <div class="url-name">老後資金シミュレーター</div>
-        <div class="url-path">retirement_simulator.html</div>
-      </div>
-      <a href="retirement_simulator.html" class="url-open">開く</a>
-    </div>
-    <div class="url-row">
-      <span class="url-num">6</span>
-      <span class="url-icon">📱</span>
-      <div class="url-info">
-        <div class="url-name">APKダウンロード</div>
-        <div class="url-path">download.html</div>
-      </div>
-      <a href="download.html" class="url-open">開く</a>
-    </div>
-  </div>
-
-  <div class="footer">enojun Tools &copy; 2026</div>
+  <div class="label">Sitemap</div>
+  <table class="url-table">
+    <thead>
+      <tr><th>Page</th><th>File</th><th></th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="name">Portal</td>
+        <td class="path">index.html</td>
+        <td><a href="index.html">Open</a></td>
+      </tr>
+      <tr>
+        <td class="name">住宅ローンシミュレーター</td>
+        <td class="path">housing_loan_simulator.html</td>
+        <td><a href="housing_loan_simulator.html">Open</a></td>
+      </tr>
+      <tr>
+        <td class="name">車リセールシミュレーター</td>
+        <td class="path">car_resale_simulator.html</td>
+        <td><a href="car_resale_simulator.html">Open</a></td>
+      </tr>
+      <tr>
+        <td class="name">上尾+α ポータル</td>
+        <td class="path">ageo_portal.html</td>
+        <td><a href="ageo_portal.html">Open</a></td>
+      </tr>
+      <tr>
+        <td class="name">老後資金シミュレーター</td>
+        <td class="path">retirement_simulator.html</td>
+        <td><a href="retirement_simulator.html">Open</a></td>
+      </tr>
+      <tr>
+        <td class="name">APK Download</td>
+        <td class="path">download.html</td>
+        <td><a href="download.html">Open</a></td>
+      </tr>
+    </tbody>
+  </table>
 
 </div>
+
+<footer class="footer">&copy; 2026 enojun</footer>
+
 </body>
 </html>
