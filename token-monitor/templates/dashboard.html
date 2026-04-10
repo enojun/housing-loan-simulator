@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code Token Monitor</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+    <style>
+        :root {
+            --bg: #0f1117;
+            --surface: #1a1d27;
+            --surface2: #242837;
+            --border: #2e3347;
+            --text: #e4e4e7;
+            --text-sub: #9ca3af;
+            --accent: #6366f1;
+            --green: #22c55e;
+            --yellow: #eab308;
+            --red: #ef4444;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+        .header {
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        .header h1 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .badge {
+            font-size: 0.75rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-weight: 500;
+        }
+        .badge-ok { background: rgba(34,197,94,0.15); color: var(--green); }
+        .badge-warn { background: rgba(234,179,8,0.15); color: var(--yellow); }
+        .badge-err { background: rgba(239,68,68,0.15); color: var(--red); }
+        .badge-off { background: rgba(156,163,175,0.15); color: var(--text-sub); }
+        .btn {
+            background: var(--accent);
+            color: #fff;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: opacity 0.2s;
+        }
+        .btn:hover { opacity: 0.85; }
+        .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1.5rem;
+        }
+
+        /* Cards grid */
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 0.75rem;
+            padding: 1.25rem;
+        }
+        .card-label {
+            font-size: 0.8rem;
+            color: var(--text-sub);
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .card-value {
+            font-size: 2rem;
+            font-weight: 700;
+            line-height: 1.2;
+        }
+        .card-sub {
+            font-size: 0.85rem;
+            color: var(--text-sub);
+            margin-top: 0.25rem;
+        }
+
+        /* Progress bar */
+        .progress-wrap {
+            margin-top: 0.75rem;
+        }
+        .progress-bar {
+            height: 8px;
+            background: var(--surface2);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.5s ease, background 0.3s;
+        }
+        .progress-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            color: var(--text-sub);
+            margin-top: 0.25rem;
+        }
+        .color-green { background: var(--green); }
+        .color-yellow { background: var(--yellow); }
+        .color-red { background: var(--red); }
+        .text-green { color: var(--green); }
+        .text-yellow { color: var(--yellow); }
+        .text-red { color: var(--red); }
+
+        /* Chart area */
+        .chart-section {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 0.75rem;
+            padding: 1.25rem;
+            margin-bottom: 1.5rem;
+        }
+        .chart-section h2 {
+            font-size: 1rem;
+            margin-bottom: 1rem;
+        }
+        .chart-container {
+            position: relative;
+            height: 280px;
+        }
+
+        /* Info section */
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1rem;
+        }
+        .info-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .info-table th,
+        .info-table td {
+            text-align: left;
+            padding: 0.5rem 0.75rem;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.85rem;
+        }
+        .info-table th {
+            color: var(--text-sub);
+            font-weight: 500;
+            width: 40%;
+        }
+
+        /* Notification log */
+        .notif-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.85rem;
+        }
+        .dot {
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+        .dot-green { background: var(--green); }
+        .dot-gray { background: var(--text-sub); }
+
+        /* Loading / Error states */
+        .state-msg {
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-sub);
+            font-size: 0.95rem;
+        }
+
+        /* Auto-refresh indicator */
+        .refresh-info {
+            font-size: 0.75rem;
+            color: var(--text-sub);
+        }
+
+        @media (max-width: 640px) {
+            .container { padding: 1rem; }
+            .card-value { font-size: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <h1>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
+        </svg>
+        Claude Code Token Monitor
+    </h1>
+    <div class="header-actions">
+        <span id="configBadge" class="badge badge-off">--</span>
+        <span class="refresh-info">自動更新: <span id="countdown">--</span>秒</span>
+        <button class="btn" id="checkNowBtn" onclick="manualCheck()">今すぐ確認</button>
+    </div>
+</div>
+
+<div class="container">
+    <!-- Status cards -->
+    <div class="cards" id="cardsArea">
+        <div class="state-msg" id="loadingMsg">データを読み込み中...</div>
+    </div>
+
+    <!-- History chart -->
+    <div class="chart-section">
+        <h2>トークン残量推移</h2>
+        <div class="chart-container">
+            <canvas id="historyChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Detail info -->
+    <div class="info-grid">
+        <div class="card">
+            <div class="card-label">詳細情報</div>
+            <table class="info-table" id="detailTable">
+                <tr><th>ステータス</th><td id="detStatus">--</td></tr>
+                <tr><th>入力トークン</th><td id="detInput">--</td></tr>
+                <tr><th>出力トークン</th><td id="detOutput">--</td></tr>
+                <tr><th>リクエスト</th><td id="detRequests">--</td></tr>
+                <tr><th>入力リセット</th><td id="detInputReset">--</td></tr>
+                <tr><th>出力リセット</th><td id="detOutputReset">--</td></tr>
+            </table>
+        </div>
+        <div class="card">
+            <div class="card-label">設定 / 通知</div>
+            <table class="info-table">
+                <tr><th>確認間隔</th><td id="cfgInterval">--</td></tr>
+                <tr><th>通知閾値</th><td id="cfgThreshold">--</td></tr>
+                <tr><th>API Key</th><td id="cfgApiKey">--</td></tr>
+                <tr><th>Webhook</th><td id="cfgWebhook">--</td></tr>
+                <tr><th>最終通知</th><td id="cfgLastNotif">--</td></tr>
+                <tr><th>エラー</th><td id="cfgError">なし</td></tr>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+const REFRESH_INTERVAL = 60;  // seconds — dashboard auto-refresh
+let countdown = REFRESH_INTERVAL;
+let chart = null;
+
+// -------------------------------------------------------
+// Helpers
+// -------------------------------------------------------
+function pctColor(pct) {
+    if (pct > 50) return 'green';
+    if (pct > 20) return 'yellow';
+    return 'red';
+}
+
+function fmtNum(n) {
+    if (n == null) return '--';
+    return Number(n).toLocaleString();
+}
+
+function fmtTime(iso) {
+    if (!iso) return '--';
+    try {
+        const d = new Date(iso);
+        return d.toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo' });
+    } catch { return iso; }
+}
+
+function fmtResetCountdown(iso) {
+    if (!iso) return '--';
+    try {
+        const reset = new Date(iso);
+        const now = new Date();
+        const diff = reset - now;
+        if (diff <= 0) return 'リセット済み';
+        const mins = Math.floor(diff / 60000);
+        const hrs = Math.floor(mins / 60);
+        const m = mins % 60;
+        if (hrs > 0) return `${hrs}時間${m}分後`;
+        return `${m}分後`;
+    } catch { return iso; }
+}
+
+// -------------------------------------------------------
+// Render cards
+// -------------------------------------------------------
+function renderCards(data) {
+    const c = data.current;
+    if (!c) {
+        document.getElementById('cardsArea').innerHTML =
+            '<div class="state-msg">まだデータがありません。API Keyを設定して確認を実行してください。</div>';
+        return;
+    }
+
+    const items = [
+        { label: 'トークン残量', pct: c.tokens_pct, remaining: c.tokens_remaining, limit: c.tokens_limit, reset: c.tokens_reset },
+        { label: '入力トークン', pct: c.input_tokens_pct, remaining: c.input_tokens_remaining, limit: c.input_tokens_limit, reset: c.input_tokens_reset },
+        { label: '出力トークン', pct: c.output_tokens_pct, remaining: c.output_tokens_remaining, limit: c.output_tokens_limit, reset: c.output_tokens_reset },
+        { label: 'リクエスト', pct: c.requests_pct, remaining: c.requests_remaining, limit: c.requests_limit, reset: c.requests_reset },
+    ];
+
+    let html = '';
+    for (const it of items) {
+        const col = pctColor(it.pct);
+        html += `
+        <div class="card">
+            <div class="card-label">${it.label}</div>
+            <div class="card-value text-${col}">${it.pct}%</div>
+            <div class="card-sub">${fmtNum(it.remaining)} / ${fmtNum(it.limit)}</div>
+            <div class="progress-wrap">
+                <div class="progress-bar">
+                    <div class="progress-fill color-${col}" style="width:${it.pct}%"></div>
+                </div>
+                <div class="progress-labels">
+                    <span>リセット: ${fmtResetCountdown(it.reset)}</span>
+                    <span>${fmtNum(it.limit - it.remaining)} 使用済</span>
+                </div>
+            </div>
+        </div>`;
+    }
+    document.getElementById('cardsArea').innerHTML = html;
+}
+
+// -------------------------------------------------------
+// Render detail table
+// -------------------------------------------------------
+function renderDetail(data) {
+    const c = data.current;
+    if (!c) return;
+
+    document.getElementById('detStatus').textContent = c.ok ? '正常' : `エラー (${c.status_code})`;
+    document.getElementById('detInput').textContent =
+        `${fmtNum(c.input_tokens_remaining)} / ${fmtNum(c.input_tokens_limit)} (${c.input_tokens_pct}%)`;
+    document.getElementById('detOutput').textContent =
+        `${fmtNum(c.output_tokens_remaining)} / ${fmtNum(c.output_tokens_limit)} (${c.output_tokens_pct}%)`;
+    document.getElementById('detRequests').textContent =
+        `${fmtNum(c.requests_remaining)} / ${fmtNum(c.requests_limit)} (${c.requests_pct}%)`;
+    document.getElementById('detInputReset').textContent = fmtTime(c.input_tokens_reset);
+    document.getElementById('detOutputReset').textContent = fmtTime(c.output_tokens_reset);
+}
+
+// -------------------------------------------------------
+// Render config
+// -------------------------------------------------------
+function renderConfig(data) {
+    const cfg = data.config || {};
+    document.getElementById('cfgInterval').textContent = `${cfg.check_interval_minutes || '--'}分`;
+    document.getElementById('cfgThreshold').textContent = `${cfg.alert_threshold || '--'}%`;
+    document.getElementById('cfgApiKey').innerHTML = cfg.api_key_set
+        ? '<span class="badge badge-ok">設定済</span>'
+        : '<span class="badge badge-err">未設定</span>';
+    document.getElementById('cfgWebhook').innerHTML = cfg.webhook_set
+        ? '<span class="badge badge-ok">設定済</span>'
+        : '<span class="badge badge-warn">未設定</span>';
+
+    const notif = data.last_notification;
+    document.getElementById('cfgLastNotif').textContent = notif ? fmtTime(notif.timestamp) : 'なし';
+    document.getElementById('cfgError').textContent = data.last_error || 'なし';
+
+    // Header badge
+    const badge = document.getElementById('configBadge');
+    if (!cfg.api_key_set) {
+        badge.className = 'badge badge-err';
+        badge.textContent = 'API Key 未設定';
+    } else if (data.current && data.current.tokens_pct <= (cfg.alert_threshold || 20)) {
+        badge.className = 'badge badge-warn';
+        badge.textContent = '残量注意';
+    } else if (data.current) {
+        badge.className = 'badge badge-ok';
+        badge.textContent = '正常';
+    } else {
+        badge.className = 'badge badge-off';
+        badge.textContent = '待機中';
+    }
+}
+
+// -------------------------------------------------------
+// Chart
+// -------------------------------------------------------
+function renderChart(history) {
+    const ctx = document.getElementById('historyChart').getContext('2d');
+    const labels = history.map(h => {
+        try {
+            return new Date(h.timestamp).toLocaleString('ja-JP', {
+                timeZone: 'Asia/Tokyo', month: 'numeric', day: 'numeric',
+                hour: '2-digit', minute: '2-digit'
+            });
+        } catch { return h.timestamp; }
+    });
+
+    const datasets = [
+        { label: 'トークン残量 %', data: history.map(h => h.tokens_pct), borderColor: '#6366f1', backgroundColor: 'rgba(99,102,241,0.1)', fill: true },
+        { label: '入力トークン %', data: history.map(h => h.input_tokens_pct), borderColor: '#22c55e', backgroundColor: 'transparent' },
+        { label: '出力トークン %', data: history.map(h => h.output_tokens_pct), borderColor: '#f59e0b', backgroundColor: 'transparent' },
+    ];
+
+    if (chart) {
+        chart.data.labels = labels;
+        chart.data.datasets.forEach((ds, i) => { ds.data = datasets[i].data; });
+        chart.update();
+        return;
+    }
+
+    chart = new Chart(ctx, {
+        type: 'line',
+        data: { labels, datasets },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: { intersect: false, mode: 'index' },
+            scales: {
+                y: { min: 0, max: 100, ticks: { callback: v => v + '%', color: '#9ca3af' }, grid: { color: '#2e3347' } },
+                x: { ticks: { color: '#9ca3af', maxRotation: 45 }, grid: { color: '#2e3347' } }
+            },
+            plugins: {
+                legend: { labels: { color: '#e4e4e7' } },
+                tooltip: { callbacks: { label: ctx => `${ctx.dataset.label}: ${ctx.parsed.y}%` } }
+            },
+            elements: { point: { radius: 3 }, line: { tension: 0.3, borderWidth: 2 } }
+        }
+    });
+}
+
+// -------------------------------------------------------
+// Fetch data
+// -------------------------------------------------------
+async function fetchData() {
+    try {
+        const [statusRes, histRes] = await Promise.all([
+            fetch('/api/status'),
+            fetch('/api/history'),
+        ]);
+        const statusData = await statusRes.json();
+        const histData = await histRes.json();
+
+        renderCards(statusData);
+        renderDetail(statusData);
+        renderConfig(statusData);
+        renderChart(histData.history || []);
+    } catch (e) {
+        console.error('Fetch error:', e);
+    }
+}
+
+async function manualCheck() {
+    const btn = document.getElementById('checkNowBtn');
+    btn.disabled = true;
+    btn.textContent = '確認中...';
+    try {
+        await fetch('/api/check-now', { method: 'POST' });
+        await fetchData();
+    } finally {
+        btn.disabled = false;
+        btn.textContent = '今すぐ確認';
+    }
+}
+
+// -------------------------------------------------------
+// Init
+// -------------------------------------------------------
+fetchData();
+setInterval(() => {
+    countdown--;
+    if (countdown <= 0) {
+        countdown = REFRESH_INTERVAL;
+        fetchData();
+    }
+    document.getElementById('countdown').textContent = countdown;
+}, 1000);
+</script>
+
+</body>
+</html>

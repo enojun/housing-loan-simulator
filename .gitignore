@@ -1,3 +1,6 @@
 .claude/
 *.Zone.Identifier
 *:Zone.Identifier
+.env
+__pycache__/
+*.pyc
