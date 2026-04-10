@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>税法検索 - tax-law-mcp</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+:root {
+  --fg: #0a0a0a; --fg-2: #525252; --fg-3: #a3a3a3;
+  --border: #e5e5e5; --bg: #fafafa; --white: #ffffff;
+  --accent: #0a0a0a; --radius: 8px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--bg);
+  color: var(--fg);
+  font-size: 13px;
+  line-height: 1.6;
+}
+.app { padding: 28px; max-width: 1080px; margin: 0 auto; }
+
+/* Header */
+.hdr { margin-bottom: 28px; }
+.hdr-text h1 { font-size: 24px; font-weight: 700; color: var(--fg); letter-spacing: -0.8px; }
+.hdr-text p { font-size: 13px; color: var(--fg-3); margin-top: 4px; }
+
+/* Card */
+.card {
+  background: var(--white);
+  border-radius: var(--radius);
+  padding: 20px;
+  border: 1px solid var(--border);
+  margin-bottom: 16px;
+}
+.card-hdr {
+  display: flex; align-items: center; gap: 8px;
+  margin-bottom: 16px; padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+}
+.card-hdr h2 { font-size: 12px; font-weight: 700; color: var(--fg-2); letter-spacing: .6px; text-transform: uppercase; }
+
+/* Tabs */
+.tabs {
+  display: flex; gap: 0; margin-bottom: 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: var(--bg);
+}
+.tab {
+  flex: 1; padding: 10px 16px;
+  font-size: 12px; font-weight: 600;
+  color: var(--fg-3);
+  background: transparent;
+  border: none; cursor: pointer;
+  text-align: center;
+  transition: all .15s;
+  border-right: 1px solid var(--border);
+  font-family: inherit;
+}
+.tab:last-child { border-right: none; }
+.tab:hover { color: var(--fg-2); background: var(--white); }
+.tab.active { color: var(--fg); background: var(--white); font-weight: 700; }
+
+/* Form */
+.form-group { margin-bottom: 12px; }
+.form-group label {
+  display: block; font-size: 11px; font-weight: 600;
+  color: var(--fg-3); margin-bottom: 4px;
+}
+.form-group input, .form-group select {
+  width: 100%;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 9px 12px;
+  color: var(--fg);
+  font-family: inherit;
+  font-size: 13px;
+  outline: none;
+  transition: border-color .15s;
+}
+.form-group input:focus, .form-group select:focus { border-color: var(--fg-3); }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+.search-btn {
+  width: 100%; margin-top: 16px; padding: 13px;
+  background: var(--fg); border: none; border-radius: var(--radius);
+  color: var(--white); font-family: inherit;
+  font-size: 14px; font-weight: 700; cursor: pointer;
+  letter-spacing: .3px; transition: opacity .15s;
+}
+.search-btn:hover { opacity: 0.8; }
+.search-btn:active { transform: scale(.98); }
+.search-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+/* API Settings */
+.api-bar {
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 20px;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 10px 16px;
+}
+.api-bar label {
+  font-size: 11px; font-weight: 700; color: var(--fg-3);
+  letter-spacing: .5px; text-transform: uppercase;
+  white-space: nowrap;
+}
+.api-bar input {
+  flex: 1;
+  background: transparent; border: none;
+  font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+  font-size: 12px; color: var(--fg-2);
+  outline: none;
+}
+.api-status {
+  width: 8px; height: 8px;
+  border-radius: 50%; flex-shrink: 0;
+  background: var(--fg-3);
+  transition: background .3s;
+}
+.api-status.ok { background: #16a34a; }
+.api-status.err { background: #dc2626; }
+
+/* Panel sections */
+.panel { display: none; }
+.panel.active { display: block; }
+
+/* Results */
+.results-area {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.results-hdr {
+  display: flex; align-items: center; gap: 8px;
+  padding: 14px 18px; background: var(--bg);
+  border-bottom: 1px solid var(--border);
+}
+.results-hdr h3 {
+  font-size: 11px; font-weight: 700; color: var(--fg-2);
+  letter-spacing: .6px; text-transform: uppercase;
+}
+.results-hdr .count {
+  margin-left: auto;
+  background: var(--bg); color: var(--fg-3);
+  padding: 3px 10px; border-radius: var(--radius);
+  font-size: 10px; font-weight: 600;
+  border: 1px solid var(--border);
+}
+.results-body {
+  padding: 0;
+  max-height: 600px;
+  overflow-y: auto;
+}
+.results-body::-webkit-scrollbar { width: 4px; }
+.results-body::-webkit-scrollbar-track { background: var(--bg); }
+.results-body::-webkit-scrollbar-thumb { background: var(--fg-3); border-radius: 2px; }
+
+/* Empty / loading / error states */
+.state-msg {
+  padding: 48px 24px;
+  text-align: center;
+  color: var(--fg-3);
+  font-size: 13px;
+}
+.state-msg .icon { font-size: 28px; margin-bottom: 12px; display: block; opacity: 0.4; }
+.state-msg.error { color: #dc2626; }
+
+.spinner {
+  width: 20px; height: 20px;
+  border: 2px solid var(--border);
+  border-top-color: var(--fg);
+  border-radius: 50%;
+  animation: spin .6s linear infinite;
+  margin: 0 auto 12px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Result items */
+.result-item {
+  padding: 16px 18px;
+  border-bottom: 1px solid var(--border);
+  transition: background .1s;
+}
+.result-item:last-child { border-bottom: none; }
+.result-item:hover { background: var(--bg); }
+.result-item-title {
+  font-size: 13px; font-weight: 700; color: var(--fg);
+  margin-bottom: 6px; line-height: 1.5;
+}
+.result-item-meta {
+  font-size: 11px; color: var(--fg-3); margin-bottom: 8px;
+  display: flex; gap: 12px; flex-wrap: wrap;
+}
+.result-item-meta span {
+  display: inline-flex; align-items: center; gap: 4px;
+}
+.result-item-body {
+  font-size: 12px; color: var(--fg-2); line-height: 1.8;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+.result-item-body p { margin-bottom: 6px; }
+
+/* Article display */
+.article-content {
+  padding: 20px;
+  font-size: 13px;
+  color: var(--fg);
+  line-height: 2;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+.article-content h3 {
+  font-size: 14px; font-weight: 700; color: var(--fg);
+  margin: 16px 0 8px; padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+}
+.article-content h3:first-child { margin-top: 0; }
+
+/* Saiketsu detail link */
+.detail-link {
+  display: inline-block; margin-top: 8px;
+  font-size: 11px; font-weight: 600;
+  color: var(--fg-2); text-decoration: underline;
+  text-decoration-color: var(--border);
+  text-underline-offset: 2px;
+  cursor: pointer;
+  transition: color .15s;
+}
+.detail-link:hover { color: var(--fg); text-decoration-color: var(--fg-3); }
+
+/* Responsive */
+@media (max-width: 720px) {
+  .app { padding: 16px; }
+  .hdr-text h1 { font-size: 20px; }
+  .tabs { flex-wrap: wrap; }
+  .tab { flex: none; width: 50%; }
+  .form-row { grid-template-columns: 1fr; }
+  .api-bar { flex-wrap: wrap; }
+  .api-bar input { min-width: 0; }
+}
+</style>
+</head>
+<body>
+<header style="border-bottom:1px solid #e5e5e5;background:#fff;">
+  <div style="max-width:1080px;margin:0 auto;padding:16px 28px;display:flex;align-items:center;justify-content:space-between;">
+    <a href="index.html" style="font-size:14px;font-weight:700;color:#0a0a0a;text-decoration:none;letter-spacing:-0.5px;">enojun/tools</a>
+    <span style="font-size:13px;color:#a3a3a3;">Tax Law Search</span>
+  </div>
+</header>
+
+<div class="app">
+  <div class="hdr">
+    <div class="hdr-text">
+      <h1>税法検索</h1>
+      <p>tax-law-mcp REST API を利用した日本の税法・通達・裁決事例の検索ツール</p>
+    </div>
+  </div>
+
+  <!-- API Base URL -->
+  <div class="api-bar">
+    <label>API URL</label>
+    <input type="text" id="apiBase" value="https://tax-law-mcp.vercel.app" placeholder="https://your-deployment.vercel.app">
+    <div class="api-status" id="apiStatus" title="API接続状態"></div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <button class="tab active" data-panel="search-law">法令検索</button>
+    <button class="tab" data-panel="get-law">条文取得</button>
+    <button class="tab" data-panel="search-saiketsu">裁決事例</button>
+    <button class="tab" data-panel="tsutatsu">通達</button>
+  </div>
+
+  <!-- Panel: 法令検索 -->
+  <div class="panel active" id="panel-search-law">
+    <div class="card">
+      <div class="card-hdr"><h2>法令をキーワードで検索</h2></div>
+      <div class="form-group">
+        <label>キーワード</label>
+        <input type="text" id="sl-keyword" placeholder="例: 住宅ローン控除、所得税、相続税">
+      </div>
+      <button class="search-btn" onclick="searchLaw()">検索</button>
+    </div>
+  </div>
+
+  <!-- Panel: 条文取得 -->
+  <div class="panel" id="panel-get-law">
+    <div class="card">
+      <div class="card-hdr"><h2>法令名と条番号から条文を取得</h2></div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>法令名</label>
+          <input type="text" id="gl-name" placeholder="例: 所得税法">
+        </div>
+        <div class="form-group">
+          <label>条番号</label>
+          <input type="text" id="gl-article" placeholder="例: 第二条">
+        </div>
+      </div>
+      <button class="search-btn" onclick="getLaw()">条文を取得</button>
+    </div>
+  </div>
+
+  <!-- Panel: 裁決事例 -->
+  <div class="panel" id="panel-search-saiketsu">
+    <div class="card">
+      <div class="card-hdr"><h2>裁決事例を検索（約1,950件）</h2></div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>キーワード</label>
+          <input type="text" id="sk-keyword" placeholder="例: 譲渡所得、贈与">
+        </div>
+        <div class="form-group">
+          <label>税目（任意）</label>
+          <select id="sk-taxtype">
+            <option value="">すべて</option>
+            <option value="所得税">所得税</option>
+            <option value="法人税">法人税</option>
+            <option value="相続税">相続税</option>
+            <option value="消費税">消費税</option>
+            <option value="贈与税">贈与税</option>
+            <option value="源泉所得税">源泉所得税</option>
+            <option value="国税徴収法関係">国税徴収法関係</option>
+          </select>
+        </div>
+      </div>
+      <button class="search-btn" onclick="searchSaiketsu()">検索</button>
+    </div>
+  </div>
+
+  <!-- Panel: 通達 -->
+  <div class="panel" id="panel-tsutatsu">
+    <div class="card">
+      <div class="card-hdr"><h2>通達の目次表示・内容取得</h2></div>
+      <div class="form-group">
+        <label>通達名</label>
+        <input type="text" id="ts-name" placeholder="例: 所得税基本通達">
+      </div>
+      <div class="form-group">
+        <label>番号（内容取得時のみ）</label>
+        <input type="text" id="ts-number" placeholder="例: 2-1（空欄で目次一覧を表示）">
+      </div>
+      <button class="search-btn" onclick="searchTsutatsu()">検索</button>
+    </div>
+  </div>
+
+  <!-- Results -->
+  <div class="results-area" id="results">
+    <div class="results-hdr">
+      <h3>検索結果</h3>
+      <span class="count" id="results-count">0 件</span>
+    </div>
+    <div class="results-body" id="results-body">
+      <div class="state-msg">
+        <span class="icon">&#128270;</span>
+        上のフォームからキーワードを入力して検索してください
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── Tab switching ──
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById('panel-' + tab.dataset.panel).classList.add('active');
+  });
+});
+
+// ── Enter key support ──
+document.querySelectorAll('.panel input').forEach(input => {
+  input.addEventListener('keydown', e => {
+    if (e.key === 'Enter') {
+      const btn = input.closest('.card').querySelector('.search-btn');
+      if (btn) btn.click();
+    }
+  });
+});
+
+// ── API helpers ──
+function getBase() {
+  return document.getElementById('apiBase').value.replace(/\/+$/, '');
+}
+
+function setStatus(state) {
+  const el = document.getElementById('apiStatus');
+  el.className = 'api-status' + (state ? ' ' + state : '');
+}
+
+function showLoading() {
+  document.getElementById('results-body').innerHTML =
+    '<div class="state-msg"><div class="spinner"></div>検索中...</div>';
+  document.getElementById('results-count').textContent = '...';
+}
+
+function showError(msg) {
+  setStatus('err');
+  document.getElementById('results-body').innerHTML =
+    '<div class="state-msg error"><span class="icon">&#9888;</span>' + escapeHtml(msg) + '</div>';
+  document.getElementById('results-count').textContent = 'Error';
+}
+
+function showEmpty() {
+  document.getElementById('results-body').innerHTML =
+    '<div class="state-msg"><span class="icon">&#128196;</span>該当する結果が見つかりませんでした</div>';
+  document.getElementById('results-count').textContent = '0 件';
+}
+
+function escapeHtml(str) {
+  const d = document.createElement('div');
+  d.textContent = str;
+  return d.innerHTML;
+}
+
+function renderMarkdown(text) {
+  if (!text) return '';
+  return escapeHtml(text)
+    .replace(/^### (.+)$/gm, '<h3>$1</h3>')
+    .replace(/^## (.+)$/gm, '<h3>$1</h3>')
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\n/g, '<br>');
+}
+
+async function apiFetch(path, params) {
+  const url = new URL(path, getBase());
+  Object.entries(params).forEach(([k, v]) => {
+    if (v) url.searchParams.set(k, v);
+  });
+
+  const res = await fetch(url.toString());
+  if (!res.ok) {
+    const text = await res.text().catch(() => '');
+    throw new Error('API Error ' + res.status + (text ? ': ' + text : ''));
+  }
+  setStatus('ok');
+  return res.json();
+}
+
+// ── Search: 法令検索 ──
+async function searchLaw() {
+  const keyword = document.getElementById('sl-keyword').value.trim();
+  if (!keyword) return;
+  showLoading();
+  try {
+    const data = await apiFetch('/api/search-law', { keyword });
+    renderSearchLawResults(data);
+  } catch (e) {
+    showError('法令検索に失敗しました: ' + e.message);
+  }
+}
+
+function renderSearchLawResults(data) {
+  const body = document.getElementById('results-body');
+  const items = Array.isArray(data) ? data : (data.results || data.content || [data]);
+
+  if (!items.length || (typeof items[0] === 'string' && !items[0].trim())) {
+    showEmpty();
+    return;
+  }
+
+  document.getElementById('results-count').textContent = items.length + ' 件';
+
+  if (typeof items[0] === 'string') {
+    body.innerHTML = '<div class="article-content">' + renderMarkdown(items[0]) + '</div>';
+    return;
+  }
+
+  body.innerHTML = items.map(item => {
+    const title = item.law_name || item.title || item.name || '法令';
+    const content = item.text || item.content || item.article || item.summary || '';
+    return '<div class="result-item">' +
+      '<div class="result-item-title">' + escapeHtml(title) + '</div>' +
+      '<div class="result-item-body">' + renderMarkdown(content) + '</div>' +
+      '</div>';
+  }).join('');
+}
+
+// ── Get: 条文取得 ──
+async function getLaw() {
+  const lawName = document.getElementById('gl-name').value.trim();
+  const article = document.getElementById('gl-article').value.trim();
+  if (!lawName || !article) return;
+  showLoading();
+  try {
+    const data = await apiFetch('/api/get-law', { law_name: lawName, article });
+    renderArticle(data);
+  } catch (e) {
+    showError('条文取得に失敗しました: ' + e.message);
+  }
+}
+
+function renderArticle(data) {
+  const body = document.getElementById('results-body');
+  document.getElementById('results-count').textContent = '1 件';
+
+  let content = '';
+  if (typeof data === 'string') {
+    content = data;
+  } else if (data.content) {
+    content = Array.isArray(data.content) ? data.content.map(c => c.text || c).join('\n') : data.content;
+  } else if (data.text) {
+    content = data.text;
+  } else {
+    content = JSON.stringify(data, null, 2);
+  }
+
+  if (!content || !content.trim()) {
+    showEmpty();
+    return;
+  }
+
+  body.innerHTML = '<div class="article-content">' + renderMarkdown(content) + '</div>';
+}
+
+// ── Search: 裁決事例 ──
+async function searchSaiketsu() {
+  const keyword = document.getElementById('sk-keyword').value.trim();
+  const taxType = document.getElementById('sk-taxtype').value;
+  if (!keyword && !taxType) return;
+
+  showLoading();
+  try {
+    const params = {};
+    if (keyword) params.keyword = keyword;
+    if (taxType) params.tax_type = taxType;
+
+    let data;
+    if (keyword) {
+      data = await apiFetch('/api/search-saiketsu', params);
+    } else {
+      data = await apiFetch('/api/list-saiketsu', params);
+    }
+    renderSaiketsuResults(data);
+  } catch (e) {
+    showError('裁決事例の検索に失敗しました: ' + e.message);
+  }
+}
+
+function renderSaiketsuResults(data) {
+  const body = document.getElementById('results-body');
+  const items = Array.isArray(data) ? data : (data.results || data.content || [data]);
+
+  if (!items.length || (typeof items[0] === 'string' && !items[0].trim())) {
+    showEmpty();
+    return;
+  }
+
+  document.getElementById('results-count').textContent = items.length + ' 件';
+
+  if (typeof items[0] === 'string') {
+    body.innerHTML = '<div class="article-content">' + renderMarkdown(items[0]) + '</div>';
+    return;
+  }
+
+  body.innerHTML = items.map(item => {
+    const title = item.title || item.case_name || item.name || '裁決事例';
+    const date = item.date || item.ruling_date || '';
+    const taxType = item.tax_type || '';
+    const summary = item.summary || item.text || item.content || '';
+    const url = item.url || '';
+
+    let meta = '';
+    if (date || taxType) {
+      meta = '<div class="result-item-meta">';
+      if (taxType) meta += '<span>' + escapeHtml(taxType) + '</span>';
+      if (date) meta += '<span>' + escapeHtml(date) + '</span>';
+      meta += '</div>';
+    }
+
+    let detailBtn = '';
+    if (url) {
+      detailBtn = '<span class="detail-link" onclick="getSaiketsuDetail(\'' +
+        escapeHtml(url).replace(/'/g, "\\'") + '\')">全文を表示</span>';
+    }
+
+    return '<div class="result-item">' +
+      '<div class="result-item-title">' + escapeHtml(title) + '</div>' +
+      meta +
+      '<div class="result-item-body">' + renderMarkdown(summary) + '</div>' +
+      detailBtn +
+      '</div>';
+  }).join('');
+}
+
+async function getSaiketsuDetail(url) {
+  showLoading();
+  try {
+    const data = await apiFetch('/api/get-saiketsu', { url });
+    renderArticle(data);
+  } catch (e) {
+    showError('裁決事例の詳細取得に失敗しました: ' + e.message);
+  }
+}
+
+// ── Tsutatsu: 通達 ──
+async function searchTsutatsu() {
+  const name = document.getElementById('ts-name').value.trim();
+  const number = document.getElementById('ts-number').value.trim();
+  if (!name) return;
+  showLoading();
+  try {
+    let data;
+    if (number) {
+      data = await apiFetch('/api/get-tsutatsu', { tsutatsu_name: name, number });
+    } else {
+      data = await apiFetch('/api/list-tsutatsu', { tsutatsu_name: name });
+    }
+    renderArticle(data);
+  } catch (e) {
+    showError('通達の取得に失敗しました: ' + e.message);
+  }
+}
+
+// ── API health check on load ──
+(async function checkApi() {
+  try {
+    const res = await fetch(getBase() + '/api/list-saiketsu', { method: 'GET' });
+    setStatus(res.ok ? 'ok' : 'err');
+  } catch {
+    setStatus('err');
+  }
+})();
+</script>
+</body>
+</html>
