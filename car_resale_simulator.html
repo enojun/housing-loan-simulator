@@ -308,6 +308,7 @@ tbody tr.loan-end td { border-bottom: 2px solid var(--border); }
                 <th>月返済額</th>
                 <th>年間費用</th>
                 <th>累計支出</th>
+                <th>ローン残債</th>
                 <th>リセール価格</th>
                 <th>実質コスト</th>
                 <th>月額相当額</th>
@@ -410,7 +411,7 @@ function calc() {
     carVal  = carVal * (1 - depRate);
     const annTotal   = Math.round(annLoanPay) + annRunning;
     cumPaid += annTotal;
-    const realCost   = cumPaid - carVal;
+    const realCost   = cumPaid + loanBal - carVal;
     const monthlyEquiv = realCost / (y * 12);
 
     res.push({
@@ -419,6 +420,7 @@ function calc() {
       monthlyPay:   inLoan ? Math.round(monthlyPayment) : 0,
       annTotal:     Math.round(annTotal),
       cumPaid:      Math.round(cumPaid),
+      loanBal:      Math.round(loanBal),
       carVal:       Math.round(carVal),
       realCost:     Math.round(realCost),
       monthlyEquiv: Math.round(monthlyEquiv),
@@ -454,6 +456,7 @@ function calc() {
       <td>${r.monthlyPay > 0 ? r.monthlyPay.toLocaleString() : '—'}</td>
       <td>${r.annTotal.toLocaleString()}</td>
       <td>${r.cumPaid.toLocaleString()}</td>
+      <td>${r.loanBal > 0 ? r.loanBal.toLocaleString() : '—'}</td>
       <td class="pos">${r.carVal.toLocaleString()}</td>
       <td class="${r.realCost >= 0 ? 'neg' : 'pos'}">${r.realCost.toLocaleString()}</td>
       <td class="${i === bestIdx ? 'meq-best' : 'meq'}">${r.monthlyEquiv.toLocaleString()}${i === bestIdx ? ' ★' : ''}</td>
@@ -470,7 +473,7 @@ function calc() {
     <div class="an-row"><span class="lbl">最終年</span><span class="v">${last.monthlyEquiv.toLocaleString()}円/月</span></div>
     <span class="badge green">✅ 最適売却：${best.y}年目</span>
     <div class="note">
-      <strong>月額相当額</strong> = (累計支出 − リセール価格) ÷ 経過月数<br>
+      <strong>月額相当額</strong> = (累計支出 + ローン残債 − リセール価格) ÷ 経過月数<br>
       この値が最小になる年が実質コスト最小の売却タイミングです。<br>
       青線 = ローン完済年、緑ハイライト = 最適売却年
     </div>
@@ -490,7 +493,7 @@ function calc() {
     <div class="an-row"><span class="lbl">${simYears}年後リセール価格</span><span class="v">${Math.round(last.carVal / 10000).toLocaleString()}万円</span></div>
     <div class="an-row"><span class="lbl">実質総コスト（${simYears}年）</span><span class="v">${Math.round(last.realCost / 10000).toLocaleString()}万円</span></div>
     <span class="badge ${bc}">${bc === 'green' ? '✅' : bc === 'amber' ? '⚡' : '⚠️'} ${verdict}</span>
-    <div class="note">実質コスト = 頭金 + 支払総額 − リセール価格<br>維持費：保険 + 自動車税 + 車検整備 + 燃料</div>
+    <div class="note">実質コスト = 累計支出 + ローン残債 − リセール価格<br>維持費：保険 + 自動車税 + 車検整備 + 燃料</div>
   `;
 }
 
