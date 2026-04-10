@@ -305,6 +305,7 @@ tbody tr.loan-end td { border-bottom: 2px solid var(--border); }
               <tr>
                 <th>年</th>
                 <th>下落率</th>
+                <th>リセール%</th>
                 <th>月返済額</th>
                 <th>年間費用</th>
                 <th>累計支出</th>
@@ -417,6 +418,7 @@ function calc() {
     res.push({
       y,
       depRate,
+      resaleRate:   carVal / carPrice * 100,
       monthlyPay:   inLoan ? Math.round(monthlyPayment) : 0,
       annTotal:     Math.round(annTotal),
       cumPaid:      Math.round(cumPaid),
@@ -453,6 +455,7 @@ function calc() {
     tr.innerHTML = `
       <td>${r.y}年目</td>
       <td class="rcol">${(r.depRate * 100).toFixed(1)}%</td>
+      <td class="rcol">${r.resaleRate.toFixed(1)}%</td>
       <td>${r.monthlyPay > 0 ? r.monthlyPay.toLocaleString() : '—'}</td>
       <td>${r.annTotal.toLocaleString()}</td>
       <td>${r.cumPaid.toLocaleString()}</td>
