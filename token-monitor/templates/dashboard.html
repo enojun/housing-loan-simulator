@@ -108,9 +108,7 @@
         }
 
         /* Progress bar */
-        .progress-wrap {
-            margin-top: 0.75rem;
-        }
+        .progress-wrap { margin-top: 0.75rem; }
         .progress-bar {
             height: 8px;
             background: var(--surface2);
@@ -175,31 +173,12 @@
             font-weight: 500;
             width: 40%;
         }
-
-        /* Notification log */
-        .notif-status {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-size: 0.85rem;
-        }
-        .dot {
-            width: 8px; height: 8px;
-            border-radius: 50%;
-            display: inline-block;
-        }
-        .dot-green { background: var(--green); }
-        .dot-gray { background: var(--text-sub); }
-
-        /* Loading / Error states */
         .state-msg {
             text-align: center;
             padding: 3rem;
             color: var(--text-sub);
             font-size: 0.95rem;
         }
-
-        /* Auto-refresh indicator */
         .refresh-info {
             font-size: 0.75rem;
             color: var(--text-sub);
@@ -260,7 +239,7 @@
                 <tr><th>確認間隔</th><td id="cfgInterval">--</td></tr>
                 <tr><th>通知閾値</th><td id="cfgThreshold">--</td></tr>
                 <tr><th>API Key</th><td id="cfgApiKey">--</td></tr>
-                <tr><th>Webhook</th><td id="cfgWebhook">--</td></tr>
+                <tr><th>Slack Webhook</th><td id="cfgWebhook">--</td></tr>
                 <tr><th>最終通知</th><td id="cfgLastNotif">--</td></tr>
                 <tr><th>エラー</th><td id="cfgError">なし</td></tr>
             </table>
@@ -269,65 +248,49 @@
 </div>
 
 <script>
-const REFRESH_INTERVAL = 60;  // seconds — dashboard auto-refresh
+const REFRESH_INTERVAL = 60;
 let countdown = REFRESH_INTERVAL;
 let chart = null;
 
-// -------------------------------------------------------
-// Helpers
-// -------------------------------------------------------
 function pctColor(pct) {
     if (pct > 50) return 'green';
     if (pct > 20) return 'yellow';
     return 'red';
 }
-
 function fmtNum(n) {
     if (n == null) return '--';
     return Number(n).toLocaleString();
 }
-
 function fmtTime(iso) {
     if (!iso) return '--';
-    try {
-        const d = new Date(iso);
-        return d.toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo' });
-    } catch { return iso; }
+    try { return new Date(iso).toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo' }); }
+    catch { return iso; }
 }
-
 function fmtResetCountdown(iso) {
     if (!iso) return '--';
     try {
-        const reset = new Date(iso);
-        const now = new Date();
-        const diff = reset - now;
+        const diff = new Date(iso) - new Date();
         if (diff <= 0) return 'リセット済み';
         const mins = Math.floor(diff / 60000);
         const hrs = Math.floor(mins / 60);
         const m = mins % 60;
-        if (hrs > 0) return `${hrs}時間${m}分後`;
-        return `${m}分後`;
+        return hrs > 0 ? `${hrs}時間${m}分後` : `${m}分後`;
     } catch { return iso; }
 }
 
-// -------------------------------------------------------
-// Render cards
-// -------------------------------------------------------
 function renderCards(data) {
     const c = data.current;
     if (!c) {
         document.getElementById('cardsArea').innerHTML =
-            '<div class="state-msg">まだデータがありません。API Keyを設定して確認を実行してください。</div>';
+            '<div class="state-msg">まだデータがありません。管理画面からAPI Keyを設定してください。</div>';
         return;
     }
-
     const items = [
         { label: 'トークン残量', pct: c.tokens_pct, remaining: c.tokens_remaining, limit: c.tokens_limit, reset: c.tokens_reset },
         { label: '入力トークン', pct: c.input_tokens_pct, remaining: c.input_tokens_remaining, limit: c.input_tokens_limit, reset: c.input_tokens_reset },
         { label: '出力トークン', pct: c.output_tokens_pct, remaining: c.output_tokens_remaining, limit: c.output_tokens_limit, reset: c.output_tokens_reset },
         { label: 'リクエスト', pct: c.requests_pct, remaining: c.requests_remaining, limit: c.requests_limit, reset: c.requests_reset },
     ];
-
     let html = '';
     for (const it of items) {
         const col = pctColor(it.pct);
@@ -350,13 +313,9 @@ function renderCards(data) {
     document.getElementById('cardsArea').innerHTML = html;
 }
 
-// -------------------------------------------------------
-// Render detail table
-// -------------------------------------------------------
 function renderDetail(data) {
     const c = data.current;
     if (!c) return;
-
     document.getElementById('detStatus').textContent = c.ok ? '正常' : `エラー (${c.status_code})`;
     document.getElementById('detInput').textContent =
         `${fmtNum(c.input_tokens_remaining)} / ${fmtNum(c.input_tokens_limit)} (${c.input_tokens_pct}%)`;
@@ -368,17 +327,14 @@ function renderDetail(data) {
     document.getElementById('detOutputReset').textContent = fmtTime(c.output_tokens_reset);
 }
 
-// -------------------------------------------------------
-// Render config
-// -------------------------------------------------------
 function renderConfig(data) {
     const cfg = data.config || {};
     document.getElementById('cfgInterval').textContent = `${cfg.check_interval_minutes || '--'}分`;
     document.getElementById('cfgThreshold').textContent = `${cfg.alert_threshold || '--'}%`;
-    document.getElementById('cfgApiKey').innerHTML = cfg.api_key_set
+    document.getElementById('cfgApiKey').innerHTML = cfg.anthropic_api_key_set
         ? '<span class="badge badge-ok">設定済</span>'
         : '<span class="badge badge-err">未設定</span>';
-    document.getElementById('cfgWebhook').innerHTML = cfg.webhook_set
+    document.getElementById('cfgWebhook').innerHTML = cfg.slack_webhook_url_set
         ? '<span class="badge badge-ok">設定済</span>'
         : '<span class="badge badge-warn">未設定</span>';
 
@@ -386,9 +342,8 @@ function renderConfig(data) {
     document.getElementById('cfgLastNotif').textContent = notif ? fmtTime(notif.timestamp) : 'なし';
     document.getElementById('cfgError').textContent = data.last_error || 'なし';
 
-    // Header badge
     const badge = document.getElementById('configBadge');
-    if (!cfg.api_key_set) {
+    if (!cfg.anthropic_api_key_set) {
         badge.className = 'badge badge-err';
         badge.textContent = 'API Key 未設定';
     } else if (data.current && data.current.tokens_pct <= (cfg.alert_threshold || 20)) {
@@ -403,9 +358,6 @@ function renderConfig(data) {
     }
 }
 
-// -------------------------------------------------------
-// Chart
-// -------------------------------------------------------
 function renderChart(history) {
     const ctx = document.getElementById('historyChart').getContext('2d');
     const labels = history.map(h => {
@@ -416,20 +368,17 @@ function renderChart(history) {
             });
         } catch { return h.timestamp; }
     });
-
     const datasets = [
         { label: 'トークン残量 %', data: history.map(h => h.tokens_pct), borderColor: '#6366f1', backgroundColor: 'rgba(99,102,241,0.1)', fill: true },
         { label: '入力トークン %', data: history.map(h => h.input_tokens_pct), borderColor: '#22c55e', backgroundColor: 'transparent' },
         { label: '出力トークン %', data: history.map(h => h.output_tokens_pct), borderColor: '#f59e0b', backgroundColor: 'transparent' },
     ];
-
     if (chart) {
         chart.data.labels = labels;
         chart.data.datasets.forEach((ds, i) => { ds.data = datasets[i].data; });
         chart.update();
         return;
     }
-
     chart = new Chart(ctx, {
         type: 'line',
         data: { labels, datasets },
@@ -450,18 +399,13 @@ function renderChart(history) {
     });
 }
 
-// -------------------------------------------------------
-// Fetch data
-// -------------------------------------------------------
 async function fetchData() {
     try {
         const [statusRes, histRes] = await Promise.all([
-            fetch('/api/status'),
-            fetch('/api/history'),
+            fetch('/api/status'), fetch('/api/history'),
         ]);
         const statusData = await statusRes.json();
         const histData = await histRes.json();
-
         renderCards(statusData);
         renderDetail(statusData);
         renderConfig(statusData);
@@ -484,16 +428,10 @@ async function manualCheck() {
     }
 }
 
-// -------------------------------------------------------
-// Init
-// -------------------------------------------------------
 fetchData();
 setInterval(() => {
     countdown--;
-    if (countdown <= 0) {
-        countdown = REFRESH_INTERVAL;
-        fetchData();
-    }
+    if (countdown <= 0) { countdown = REFRESH_INTERVAL; fetchData(); }
     document.getElementById('countdown').textContent = countdown;
 }, 1000);
 </script>

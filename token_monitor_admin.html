@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Token Monitor - 管理画面</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+  --fg: #0a0a0a;
+  --fg-2: #525252;
+  --fg-3: #a3a3a3;
+  --border: #e5e5e5;
+  --bg: #fafafa;
+  --white: #ffffff;
+  --accent: #6366f1;
+  --green: #16a34a;
+  --green-bg: #f0fdf4;
+  --red: #dc2626;
+  --red-bg: #fef2f2;
+  --yellow: #ca8a04;
+  --yellow-bg: #fefce8;
+  --radius: 8px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: var(--bg);
+  color: var(--fg);
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+/* Header */
+.header {
+  border-bottom: 1px solid var(--border);
+  background: var(--white);
+}
+.header-inner {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 20px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.logo {
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  color: var(--fg);
+  text-decoration: none;
+}
+.header-links {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+.header-links a {
+  font-size: 13px;
+  color: var(--fg-2);
+  text-decoration: none;
+  transition: color .15s;
+}
+.header-links a:hover { color: var(--fg); }
+
+/* Main */
+.main {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 40px 24px 80px;
+}
+.main h1 {
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  margin-bottom: 8px;
+}
+.main .subtitle {
+  font-size: 14px;
+  color: var(--fg-2);
+  margin-bottom: 32px;
+  line-height: 1.6;
+}
+
+/* Status banner */
+.status-banner {
+  padding: 12px 16px;
+  border-radius: var(--radius);
+  font-size: 13px;
+  font-weight: 500;
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.status-banner.ok { background: var(--green-bg); color: var(--green); }
+.status-banner.err { background: var(--red-bg); color: var(--red); }
+.status-banner.warn { background: var(--yellow-bg); color: var(--yellow); }
+.status-banner.hidden { display: none; }
+
+/* Card */
+.card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  margin-bottom: 20px;
+}
+.card-title {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.card-title .badge {
+  font-size: 11px;
+  font-weight: 500;
+  padding: 2px 8px;
+  border-radius: 999px;
+}
+.badge-required { background: var(--red-bg); color: var(--red); }
+.badge-optional { background: var(--yellow-bg); color: var(--yellow); }
+
+/* Form */
+.field {
+  margin-bottom: 16px;
+}
+.field:last-child { margin-bottom: 0; }
+.field label {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--fg);
+  margin-bottom: 6px;
+}
+.field .hint {
+  font-size: 12px;
+  color: var(--fg-3);
+  margin-bottom: 6px;
+  line-height: 1.5;
+}
+.field input, .field select {
+  width: 100%;
+  padding: 9px 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 13px;
+  font-family: inherit;
+  color: var(--fg);
+  background: var(--white);
+  transition: border-color .15s;
+  outline: none;
+}
+.field input:focus, .field select:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(99,102,241,0.1);
+}
+.field input::placeholder { color: var(--fg-3); }
+.field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+/* Buttons */
+.btn-row {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+}
+.btn {
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all .15s;
+}
+.btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.btn-primary {
+  background: var(--fg);
+  color: var(--white);
+  border-color: var(--fg);
+}
+.btn-primary:hover:not(:disabled) { opacity: 0.85; }
+.btn-secondary {
+  background: var(--white);
+  color: var(--fg);
+  border-color: var(--border);
+}
+.btn-secondary:hover:not(:disabled) { background: var(--bg); }
+.btn-accent {
+  background: var(--accent);
+  color: var(--white);
+}
+.btn-accent:hover:not(:disabled) { opacity: 0.85; }
+
+/* Footer */
+.footer {
+  border-top: 1px solid var(--border);
+  text-align: center;
+  padding: 24px;
+  font-size: 12px;
+  color: var(--fg-3);
+}
+
+/* Howto section */
+.howto {
+  margin-top: 32px;
+}
+.howto h2 {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+.howto details {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  margin-bottom: 8px;
+}
+.howto summary {
+  padding: 14px 16px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.howto summary::before {
+  content: "▸";
+  font-size: 11px;
+  color: var(--fg-3);
+  transition: transform .15s;
+}
+.howto details[open] summary::before {
+  transform: rotate(90deg);
+}
+.howto .detail-body {
+  padding: 0 16px 16px;
+  font-size: 13px;
+  color: var(--fg-2);
+  line-height: 1.7;
+}
+.howto ol, .howto ul {
+  margin-left: 20px;
+  margin-top: 8px;
+}
+.howto li { margin-bottom: 4px; }
+.howto code {
+  font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+  font-size: 12px;
+  background: var(--bg);
+  padding: 1px 5px;
+  border-radius: 3px;
+  border: 1px solid var(--border);
+}
+
+@media (max-width: 640px) {
+  .field-row { grid-template-columns: 1fr; }
+  .btn-row { flex-direction: column; }
+}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="header-inner">
+    <a class="logo" href="index.html">enojun/tools</a>
+    <div class="header-links">
+      <a href="index.html">Home</a>
+      <span style="color:var(--fg-3)">Token Monitor 管理</span>
+    </div>
+  </div>
+</header>
+
+<div class="main">
+  <h1>Token Monitor 管理画面</h1>
+  <p class="subtitle">
+    Claude Code トークン監視アプリの接続先サーバーとパラメーターを設定します。<br>
+    設定はサーバー側に保存されます。
+  </p>
+
+  <!-- Status banner -->
+  <div id="statusBanner" class="status-banner hidden"></div>
+
+  <!-- Server connection -->
+  <div class="card">
+    <div class="card-title">
+      サーバー接続
+      <span class="badge badge-required">必須</span>
+    </div>
+    <div class="field">
+      <label for="serverUrl">監視サーバー URL</label>
+      <div class="hint">Token Monitor サーバーのアドレス (例: http://192.168.1.10:3000)</div>
+      <input type="url" id="serverUrl" placeholder="http://localhost:3000">
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="testConnection()">接続テスト</button>
+      <button class="btn btn-secondary" onclick="loadCurrentConfig()">現在の設定を読み込み</button>
+    </div>
+  </div>
+
+  <!-- Anthropic API -->
+  <div class="card">
+    <div class="card-title">
+      Anthropic API 設定
+      <span class="badge badge-required">必須</span>
+    </div>
+    <div class="field">
+      <label for="apiKey">API Key</label>
+      <div class="hint">console.anthropic.com > Settings > API Keys から取得</div>
+      <input type="password" id="apiKey" placeholder="sk-ant-...">
+    </div>
+    <div class="field">
+      <label for="apiUrl">API Base URL</label>
+      <div class="hint">通常は変更不要</div>
+      <input type="url" id="apiUrl" placeholder="https://api.anthropic.com">
+    </div>
+    <div class="field">
+      <label for="checkModel">確認用モデル</label>
+      <div class="hint">レート制限ヘッダー取得用の軽量リクエストに使用するモデル</div>
+      <select id="checkModel">
+        <option value="claude-sonnet-4-6">claude-sonnet-4-6 (推奨)</option>
+        <option value="claude-haiku-4-5-20251001">claude-haiku-4-5</option>
+        <option value="claude-opus-4-6">claude-opus-4-6</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Slack -->
+  <div class="card">
+    <div class="card-title">
+      Slack 通知設定
+      <span class="badge badge-optional">任意</span>
+    </div>
+    <div class="field">
+      <label for="slackWebhook">Incoming Webhook URL</label>
+      <div class="hint">Slack App > Incoming Webhooks から取得 (下記の手順を参照)</div>
+      <input type="url" id="slackWebhook" placeholder="https://hooks.slack.com/services/T.../B.../...">
+    </div>
+  </div>
+
+  <!-- Monitoring -->
+  <div class="card">
+    <div class="card-title">
+      監視設定
+      <span class="badge badge-optional">任意</span>
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label for="interval">確認間隔 (分)</label>
+        <input type="number" id="interval" value="60" min="1" max="1440">
+      </div>
+      <div class="field">
+        <label for="threshold">通知閾値 (%)</label>
+        <div class="hint">残量がこの値以下で警告通知</div>
+        <input type="number" id="threshold" value="20" min="1" max="100">
+      </div>
+    </div>
+  </div>
+
+  <!-- Actions -->
+  <div class="btn-row">
+    <button class="btn btn-primary" id="saveBtn" onclick="saveConfig()">設定を保存</button>
+    <button class="btn btn-accent" onclick="triggerCheck()">今すぐトークン確認</button>
+  </div>
+
+  <!-- How-to -->
+  <div class="howto">
+    <h2>パラメーター取得方法</h2>
+
+    <details>
+      <summary>Anthropic API Key の取得</summary>
+      <div class="detail-body">
+        <ol>
+          <li><a href="https://console.anthropic.com/" target="_blank">console.anthropic.com</a> にログイン</li>
+          <li>左メニュー「Settings」→「API Keys」を開く</li>
+          <li>「Create Key」をクリック</li>
+          <li>キー名を入力して作成 → 表示されるキーをコピー</li>
+        </ol>
+        <p style="margin-top:8px;">
+          キーは <code>sk-ant-...</code> で始まる文字列です。<br>
+          作成後は再表示できないため、すぐに保存してください。
+        </p>
+      </div>
+    </details>
+
+    <details>
+      <summary>Slack Incoming Webhook URL の取得</summary>
+      <div class="detail-body">
+        <ol>
+          <li><a href="https://api.slack.com/apps" target="_blank">api.slack.com/apps</a> にアクセス</li>
+          <li>「Create New App」→「From scratch」を選択</li>
+          <li>App名 (例: Token Monitor) とワークスペースを入力して作成</li>
+          <li>左メニュー「Incoming Webhooks」→ トグルを「On」に</li>
+          <li>「Add New Webhook to Workspace」をクリック</li>
+          <li>通知先チャンネルを選択して「Allow」</li>
+          <li>表示される Webhook URL をコピー</li>
+        </ol>
+        <p style="margin-top:8px;">
+          URLは <code>https://hooks.slack.com/services/T.../B.../...</code> の形式です。
+        </p>
+      </div>
+    </details>
+
+    <details>
+      <summary>監視サーバーの起動方法</summary>
+      <div class="detail-body">
+        <ol>
+          <li>リポジトリをクローン: <code>git clone ...</code></li>
+          <li><code>cd token-monitor</code></li>
+          <li><code>pip install -r requirements.txt</code></li>
+          <li><code>python app.py</code></li>
+        </ol>
+        <p style="margin-top:8px;">
+          サーバーが <code>http://localhost:3000</code> で起動します。<br>
+          この管理画面からサーバーURLを指定して設定を保存すると、<br>
+          環境変数や <code>.env</code> ファイルなしで動作します。
+        </p>
+      </div>
+    </details>
+  </div>
+</div>
+
+<footer class="footer">&copy; 2026 enojun</footer>
+
+<script>
+// -------------------------------------------------------
+// Helpers
+// -------------------------------------------------------
+const $ = id => document.getElementById(id);
+
+function getServerUrl() {
+  const url = $('serverUrl').value.trim().replace(/\/+$/, '');
+  if (!url) {
+    showStatus('err', 'サーバーURLを入力してください');
+    return null;
+  }
+  return url;
+}
+
+function showStatus(type, msg) {
+  const b = $('statusBanner');
+  b.className = `status-banner ${type}`;
+  b.textContent = msg;
+}
+
+// Persist server URL in localStorage
+function rememberServerUrl() {
+  const url = $('serverUrl').value.trim();
+  if (url) localStorage.setItem('token_monitor_server', url);
+}
+
+// -------------------------------------------------------
+// API calls
+// -------------------------------------------------------
+async function testConnection() {
+  const base = getServerUrl();
+  if (!base) return;
+  rememberServerUrl();
+  try {
+    const res = await fetch(`${base}/api/config`, { signal: AbortSignal.timeout(5000) });
+    if (res.ok) {
+      showStatus('ok', 'サーバーに接続できました');
+    } else {
+      showStatus('err', `接続エラー: HTTP ${res.status}`);
+    }
+  } catch (e) {
+    showStatus('err', `接続失敗: ${e.message}`);
+  }
+}
+
+async function loadCurrentConfig() {
+  const base = getServerUrl();
+  if (!base) return;
+  rememberServerUrl();
+  try {
+    const res = await fetch(`${base}/api/config`, { signal: AbortSignal.timeout(5000) });
+    if (!res.ok) { showStatus('err', `読み込みエラー: HTTP ${res.status}`); return; }
+    const data = await res.json();
+    const cfg = data.config || {};
+
+    // Populate fields (don't overwrite secrets with masked values)
+    if (cfg.anthropic_api_url) $('apiUrl').value = cfg.anthropic_api_url;
+    if (cfg.check_model) $('checkModel').value = cfg.check_model;
+    if (cfg.check_interval_minutes) $('interval').value = cfg.check_interval_minutes;
+    if (cfg.alert_threshold) $('threshold').value = cfg.alert_threshold;
+
+    showStatus('ok', '現在の設定を読み込みました (APIキー・Webhook URLはマスク表示のため空欄のままです)');
+  } catch (e) {
+    showStatus('err', `読み込み失敗: ${e.message}`);
+  }
+}
+
+async function saveConfig() {
+  const base = getServerUrl();
+  if (!base) return;
+  rememberServerUrl();
+
+  const body = {};
+  const apiKey = $('apiKey').value.trim();
+  const apiUrl = $('apiUrl').value.trim();
+  const model = $('checkModel').value;
+  const webhook = $('slackWebhook').value.trim();
+  const interval = parseInt($('interval').value, 10);
+  const threshold = parseInt($('threshold').value, 10);
+
+  if (apiKey) body.anthropic_api_key = apiKey;
+  if (apiUrl) body.anthropic_api_url = apiUrl;
+  if (model) body.check_model = model;
+  if (webhook) body.slack_webhook_url = webhook;
+  if (!isNaN(interval) && interval > 0) body.check_interval_minutes = interval;
+  if (!isNaN(threshold) && threshold > 0) body.alert_threshold = threshold;
+
+  if (Object.keys(body).length === 0) {
+    showStatus('warn', '変更する項目がありません');
+    return;
+  }
+
+  const btn = $('saveBtn');
+  btn.disabled = true;
+  btn.textContent = '保存中...';
+  try {
+    const res = await fetch(`${base}/api/config`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+      signal: AbortSignal.timeout(5000),
+    });
+    if (res.ok) {
+      showStatus('ok', '設定を保存しました');
+    } else {
+      const data = await res.json().catch(() => ({}));
+      showStatus('err', `保存エラー: HTTP ${res.status} ${data.detail || ''}`);
+    }
+  } catch (e) {
+    showStatus('err', `保存失敗: ${e.message}`);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '設定を保存';
+  }
+}
+
+async function triggerCheck() {
+  const base = getServerUrl();
+  if (!base) return;
+  rememberServerUrl();
+  try {
+    showStatus('ok', 'トークン確認を実行中...');
+    const res = await fetch(`${base}/api/check-now`, {
+      method: 'POST',
+      signal: AbortSignal.timeout(30000),
+    });
+    if (res.ok) {
+      const data = await res.json();
+      if (data.error) {
+        showStatus('err', `確認エラー: ${data.error}`);
+      } else if (data.current) {
+        const c = data.current;
+        showStatus('ok', `確認完了 — トークン残量: ${c.tokens_pct}% (${Number(c.tokens_remaining).toLocaleString()} / ${Number(c.tokens_limit).toLocaleString()})`);
+      } else {
+        showStatus('ok', '確認完了');
+      }
+    } else {
+      showStatus('err', `確認エラー: HTTP ${res.status}`);
+    }
+  } catch (e) {
+    showStatus('err', `確認失敗: ${e.message}`);
+  }
+}
+
+// -------------------------------------------------------
+// Init — restore server URL from localStorage
+// -------------------------------------------------------
+(function init() {
+  const saved = localStorage.getItem('token_monitor_server');
+  if (saved) $('serverUrl').value = saved;
+})();
+</script>
+
+</body>
+</html>
