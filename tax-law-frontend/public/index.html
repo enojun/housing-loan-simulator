@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>税法情報検索システム</title>
+  <style>
+    :root {
+      --primary: #1a5276;
+      --primary-light: #2980b9;
+      --accent: #e74c3c;
+      --bg: #f5f7fa;
+      --card-bg: #ffffff;
+      --text: #2c3e50;
+      --text-light: #7f8c8d;
+      --border: #dce1e6;
+      --success: #27ae60;
+      --warning: #f39c12;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: "Hiragino Kaku Gothic ProN", "Noto Sans JP", "Meiryo", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+    header {
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      color: white;
+      padding: 1.5rem 2rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+    header h1 { font-size: 1.5rem; font-weight: 700; }
+    header p { font-size: 0.85rem; opacity: 0.85; margin-top: 0.3rem; }
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 1.5rem;
+    }
+    .status-bar {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.6rem 1rem;
+      background: var(--card-bg);
+      border-radius: 8px;
+      margin-bottom: 1.5rem;
+      border: 1px solid var(--border);
+      font-size: 0.85rem;
+    }
+    .status-dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      background: var(--warning);
+      animation: pulse 1.5s infinite;
+    }
+    .status-dot.ok { background: var(--success); animation: none; }
+    .status-dot.error { background: var(--accent); animation: none; }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    /* Tabs */
+    .tabs {
+      display: flex;
+      gap: 0.25rem;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+    }
+    .tab {
+      padding: 0.6rem 1rem;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px 8px 0 0;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--text-light);
+      transition: all 0.2s;
+    }
+    .tab:hover { color: var(--primary); }
+    .tab.active {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+    .tab-category {
+      font-size: 0.65rem;
+      display: block;
+      opacity: 0.7;
+    }
+
+    /* Panel */
+    .panel {
+      display: none;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 0 8px 8px 8px;
+      padding: 1.5rem;
+    }
+    .panel.active { display: block; }
+    .panel h2 {
+      font-size: 1.1rem;
+      margin-bottom: 0.3rem;
+      color: var(--primary);
+    }
+    .panel .desc {
+      font-size: 0.85rem;
+      color: var(--text-light);
+      margin-bottom: 1.2rem;
+    }
+
+    /* Form */
+    .form-group {
+      margin-bottom: 1rem;
+    }
+    .form-group label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 0.3rem;
+    }
+    .form-group label .required {
+      color: var(--accent);
+      font-size: 0.75rem;
+    }
+    .form-group label .optional {
+      color: var(--text-light);
+      font-size: 0.75rem;
+    }
+    .form-group input,
+    .form-group select {
+      width: 100%;
+      padding: 0.6rem 0.8rem;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 0.9rem;
+      font-family: inherit;
+      transition: border-color 0.2s;
+    }
+    .form-group input:focus,
+    .form-group select:focus {
+      outline: none;
+      border-color: var(--primary-light);
+      box-shadow: 0 0 0 3px rgba(41,128,185,0.1);
+    }
+    .form-group .hint {
+      font-size: 0.75rem;
+      color: var(--text-light);
+      margin-top: 0.2rem;
+    }
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+    @media (max-width: 600px) {
+      .form-row { grid-template-columns: 1fr; }
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.7rem 1.5rem;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      font-family: inherit;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn:hover { background: var(--primary-light); }
+    .btn:disabled {
+      background: var(--text-light);
+      cursor: not-allowed;
+    }
+    .btn .spinner {
+      width: 16px; height: 16px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+      display: none;
+    }
+    .btn.loading .spinner { display: block; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Result */
+    .result {
+      margin-top: 1.5rem;
+      border-top: 1px solid var(--border);
+      padding-top: 1rem;
+    }
+    .result h3 {
+      font-size: 0.9rem;
+      color: var(--text-light);
+      margin-bottom: 0.5rem;
+    }
+    .result-content {
+      background: #f8f9fa;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 1rem;
+      font-size: 0.85rem;
+      white-space: pre-wrap;
+      word-break: break-word;
+      max-height: 600px;
+      overflow-y: auto;
+      line-height: 1.7;
+    }
+    .result-content .error-text {
+      color: var(--accent);
+    }
+    .result-time {
+      font-size: 0.75rem;
+      color: var(--text-light);
+      margin-top: 0.3rem;
+    }
+
+    footer {
+      text-align: center;
+      padding: 2rem 1rem;
+      font-size: 0.8rem;
+      color: var(--text-light);
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>税法情報検索システム</h1>
+  <p>e-Gov法令API・国税庁通達・国税不服審判所裁決を横断検索</p>
+</header>
+
+<div class="container">
+  <div class="status-bar">
+    <div class="status-dot" id="statusDot"></div>
+    <span id="statusText">MCPサーバーに接続中...</span>
+  </div>
+
+  <div class="tabs" id="tabs">
+    <div class="tab active" data-panel="get_law">
+      <span class="tab-category">法令</span>
+      法令取得
+    </div>
+    <div class="tab" data-panel="search_law">
+      <span class="tab-category">法令</span>
+      法令検索
+    </div>
+    <div class="tab" data-panel="get_tsutatsu">
+      <span class="tab-category">通達</span>
+      通達取得
+    </div>
+    <div class="tab" data-panel="list_tsutatsu">
+      <span class="tab-category">通達</span>
+      通達一覧
+    </div>
+    <div class="tab" data-panel="list_saiketsu">
+      <span class="tab-category">裁決</span>
+      裁決一覧
+    </div>
+    <div class="tab" data-panel="search_saiketsu">
+      <span class="tab-category">裁決</span>
+      裁決検索
+    </div>
+    <div class="tab" data-panel="get_saiketsu">
+      <span class="tab-category">裁決</span>
+      裁決取得
+    </div>
+  </div>
+
+  <!-- get_law -->
+  <div class="panel active" id="panel_get_law">
+    <h2>法令取得 (get_law)</h2>
+    <p class="desc">e-Gov法令APIから指定した法律・政令・省令の条文を取得します。</p>
+    <div class="form-group">
+      <label>法令名 <span class="required">*必須</span></label>
+      <input type="text" id="gl_law_name" placeholder="例: 所得税法, 所法, 法人税法">
+      <div class="hint">正式名称・略称どちらも対応（例: 所法 → 所得税法）</div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>条 <span class="optional">任意</span></label>
+        <input type="text" id="gl_article" placeholder="例: 9">
+      </div>
+      <div class="form-group">
+        <label>項 <span class="optional">任意</span></label>
+        <input type="text" id="gl_paragraph" placeholder="例: 1">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>号 <span class="optional">任意</span></label>
+        <input type="text" id="gl_item" placeholder="例: 1">
+      </div>
+      <div class="form-group">
+        <label>出力形式 <span class="optional">任意</span></label>
+        <select id="gl_format">
+          <option value="">デフォルト (markdown)</option>
+          <option value="markdown">Markdown</option>
+          <option value="toc">目次のみ</option>
+        </select>
+      </div>
+    </div>
+    <button class="btn" onclick="callTool('get_law')">
+      <span class="spinner"></span>取得する
+    </button>
+    <div class="result" id="result_get_law" style="display:none">
+      <h3>実行結果</h3>
+      <div class="result-content"></div>
+      <div class="result-time"></div>
+    </div>
+  </div>
+
+  <!-- search_law -->
+  <div class="panel" id="panel_search_law">
+    <h2>法令検索 (search_law)</h2>
+    <p class="desc">キーワードで法令を検索します。最大20件の結果を返します。</p>
+    <div class="form-group">
+      <label>キーワード <span class="required">*必須</span></label>
+      <input type="text" id="sl_keyword" placeholder="例: 相続税">
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>法令種別 <span class="optional">任意</span></label>
+        <select id="sl_law_type">
+          <option value="">すべて</option>
+          <option value="Act">法律 (Act)</option>
+          <option value="CabinetOrder">政令 (CabinetOrder)</option>
+          <option value="MinisterialOrdinance">省令 (MinisterialOrdinance)</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>件数上限 <span class="optional">任意</span></label>
+        <input type="number" id="sl_limit" placeholder="デフォルト: 20" min="1" max="100">
+      </div>
+    </div>
+    <button class="btn" onclick="callTool('search_law')">
+      <span class="spinner"></span>検索する
+    </button>
+    <div class="result" id="result_search_law" style="display:none">
+      <h3>検索結果</h3>
+      <div class="result-content"></div>
+      <div class="result-time"></div>
+    </div>
+  </div>
+
+  <!-- get_tsutatsu -->
+  <div class="panel" id="panel_get_tsutatsu">
+    <h2>通達取得 (get_tsutatsu)</h2>
+    <p class="desc">国税庁の通達テキストを取得します。</p>
+    <div class="form-row">
+      <div class="form-group">
+        <label>通達名 <span class="required">*必須</span></label>
+        <input type="text" id="gt_name" placeholder="例: 所得税基本通達, 所基通">
+        <div class="hint">略称対応（例: 所基通 → 所得税基本通達）</div>
+      </div>
+      <div class="form-group">
+        <label>番号 <span class="required">*必須</span></label>
+        <input type="text" id="gt_number" placeholder="例: 9-1">
+      </div>
+    </div>
+    <button class="btn" onclick="callTool('get_tsutatsu')">
+      <span class="spinner"></span>取得する
+    </button>
+    <div class="result" id="result_get_tsutatsu" style="display:none">
+      <h3>実行結果</h3>
+      <div class="result-content"></div>
+      <div class="result-time"></div>
+    </div>
+  </div>
+
+  <!-- list_tsutatsu -->
+  <div class="panel" id="panel_list_tsutatsu">
+    <h2>通達一覧 (list_tsutatsu)</h2>
+    <p class="desc">通達の目次（章・条の構成）を一覧表示します。</p>
+    <div class="form-row">
+      <div class="form-group">
+        <label>通達名 <span class="required">*必須</span></label>
+        <input type="text" id="lt_name" placeholder="例: 所得税基本通達">
+      </div>
+      <div class="form-group">
+        <label>セクション <span class="optional">任意</span></label>
+        <input type="text" id="lt_section" placeholder="例: 第1章">
+      </div>
+    </div>
+    <button class="btn" onclick="callTool('list_tsutatsu')">
+      <span class="spinner"></span>一覧取得
+    </button>
+    <div class="result" id="result_list_tsutatsu" style="display:none">
+      <h3>実行結果</h3>
+      <div class="result-content"></div>
+      <div class="result-time"></div>
+    </div>
+  </div>
+
+  <!-- list_saiketsu -->
+  <div class="panel" id="panel_list_saiketsu">
+    <h2>裁決一覧 (list_saiketsu)</h2>
+    <p class="desc">国税不服審判所の裁決事例の税目カテゴリと件数を表示します。</p>
+    <div class="form-group">
+      <label>税目 <span class="optional">任意（空欄で全税目一覧）</span></label>
+      <input type="text" id="ls_tax_type" placeholder="例: 所得税">
+      <div class="hint">空欄のまま実行すると13税目の一覧を表示します</div>
+    </div>
+    <button class="btn" onclick="callTool('list_saiketsu')">
+      <span class="spinner"></span>一覧取得
+    </button>
+    <div class="result" id="result_list_saiketsu" style="display:none">
+      <h3>実行結果</h3>
+      <div class="result-content"></div>
+      <div class="result-time"></div>
+    </div>
+  </div>
+
+  <!-- search_saiketsu -->
+  <div class="panel" id="panel_search_saiketsu">
+    <h2>裁決検索 (search_saiketsu)</h2>
+    <p class="desc">裁決事例をキーワード検索します。初回検索は30〜60秒かかる場合があります。</p>
+    <div class="form-group">
+      <label>キーワード <span class="required">*必須</span></label>
+      <input type="text" id="ss_keyword" placeholder="例: 消費税 仕入税額控除">
+      <div class="hint">スペース区切りでAND検索</div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>税目 <span class="optional">任意</span></label>
+        <input type="text" id="ss_tax_type" placeholder="例: 消費税">
+      </div>
+      <div class="form-group">
+        <label>件数上限 <span class="optional">任意</span></label>
+        <input type="number" id="ss_limit" placeholder="デフォルト: 10" min="1" max="50">
+      </div>
+    </div>
+    <div class="form-group">
+      <label>
+        <input type="checkbox" id="ss_latest"> 最新の裁決のみ
+      </label>
+    </div>
+    <button class="btn" onclick="callTool('search_saiketsu')">
+      <span class="spinner"></span>検索する
+    </button>
+    <div class="result" id="result_search_saiketsu" style="display:none">
+      <h3>検索結果</h3>
+      <div class="result-content"></div>
+      <div class="result-time"></div>
+    </div>
+  </div>
+
+  <!-- get_saiketsu -->
+  <div class="panel" id="panel_get_saiketsu">
+    <h2>裁決取得 (get_saiketsu)</h2>
+    <p class="desc">裁決事例の全文テキストを取得します。URLまたは集裁集番号+事件番号で指定します。</p>
+    <div class="form-group">
+      <label>URL <span class="optional">※URLまたは下の番号指定</span></label>
+      <input type="text" id="gs_url" placeholder="裁決事例のURLを直接指定">
+    </div>
+    <p style="text-align:center; color:var(--text-light); font-size:0.8rem; margin:0.5rem 0;">― または ―</p>
+    <div class="form-row">
+      <div class="form-group">
+        <label>集裁集番号 <span class="optional">任意</span></label>
+        <input type="text" id="gs_collection_no" placeholder="例: 139">
+      </div>
+      <div class="form-group">
+        <label>事件番号 <span class="optional">任意</span></label>
+        <input type="text" id="gs_case_no" placeholder="例: 1">
+      </div>
+    </div>
+    <button class="btn" onclick="callTool('get_saiketsu')">
+      <span class="spinner"></span>取得する
+    </button>
+    <div class="result" id="result_get_saiketsu" style="display:none">
+      <h3>実行結果</h3>
+      <div class="result-content"></div>
+      <div class="result-time"></div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  税法情報検索システム &mdash; Powered by <a href="https://github.com/kentaroajisaka/tax-law-mcp" target="_blank">tax-law-mcp</a>
+</footer>
+
+<script>
+// Tab switching
+document.getElementById('tabs').addEventListener('click', (e) => {
+  const tab = e.target.closest('.tab');
+  if (!tab) return;
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  tab.classList.add('active');
+  document.getElementById('panel_' + tab.dataset.panel).classList.add('active');
+});
+
+// Health check
+async function checkHealth() {
+  try {
+    const res = await fetch('/api/health');
+    const data = await res.json();
+    const dot = document.getElementById('statusDot');
+    const text = document.getElementById('statusText');
+    if (data.status === 'ok') {
+      dot.className = 'status-dot ok';
+      text.textContent = 'MCPサーバー接続済み';
+    } else {
+      dot.className = 'status-dot';
+      text.textContent = 'MCPサーバー初期化中...';
+    }
+  } catch {
+    document.getElementById('statusDot').className = 'status-dot error';
+    document.getElementById('statusText').textContent = 'サーバー接続エラー';
+  }
+}
+checkHealth();
+setInterval(checkHealth, 5000);
+
+// Build arguments for each tool
+function buildArgs(toolName) {
+  const args = {};
+  switch (toolName) {
+    case 'get_law': {
+      const v = document.getElementById('gl_law_name').value.trim();
+      if (!v) { alert('法令名を入力してください'); return null; }
+      args.law_name = v;
+      const a = document.getElementById('gl_article').value.trim();
+      if (a) args.article = a;
+      const p = document.getElementById('gl_paragraph').value.trim();
+      if (p) args.paragraph = p;
+      const i = document.getElementById('gl_item').value.trim();
+      if (i) args.item = i;
+      const f = document.getElementById('gl_format').value;
+      if (f) args.format = f;
+      break;
+    }
+    case 'search_law': {
+      const v = document.getElementById('sl_keyword').value.trim();
+      if (!v) { alert('キーワードを入力してください'); return null; }
+      args.keyword = v;
+      const t = document.getElementById('sl_law_type').value;
+      if (t) args.law_type = t;
+      const l = document.getElementById('sl_limit').value;
+      if (l) args.limit = parseInt(l);
+      break;
+    }
+    case 'get_tsutatsu': {
+      const n = document.getElementById('gt_name').value.trim();
+      const num = document.getElementById('gt_number').value.trim();
+      if (!n || !num) { alert('通達名と番号を入力してください'); return null; }
+      args.tsutatsu_name = n;
+      args.number = num;
+      break;
+    }
+    case 'list_tsutatsu': {
+      const n = document.getElementById('lt_name').value.trim();
+      if (!n) { alert('通達名を入力してください'); return null; }
+      args.tsutatsu_name = n;
+      const s = document.getElementById('lt_section').value.trim();
+      if (s) args.section = s;
+      break;
+    }
+    case 'list_saiketsu': {
+      const t = document.getElementById('ls_tax_type').value.trim();
+      if (t) args.tax_type = t;
+      break;
+    }
+    case 'search_saiketsu': {
+      const k = document.getElementById('ss_keyword').value.trim();
+      if (!k) { alert('キーワードを入力してください'); return null; }
+      args.keyword = k;
+      const t = document.getElementById('ss_tax_type').value.trim();
+      if (t) args.tax_type = t;
+      const l = document.getElementById('ss_limit').value;
+      if (l) args.limit = parseInt(l);
+      if (document.getElementById('ss_latest').checked) args.latest = true;
+      break;
+    }
+    case 'get_saiketsu': {
+      const u = document.getElementById('gs_url').value.trim();
+      const cn = document.getElementById('gs_collection_no').value.trim();
+      const cno = document.getElementById('gs_case_no').value.trim();
+      if (u) {
+        args.url = u;
+      } else if (cn && cno) {
+        args.collection_no = parseInt(cn);
+        args.case_no = parseInt(cno);
+      } else {
+        alert('URLまたは集裁集番号と事件番号を入力してください');
+        return null;
+      }
+      break;
+    }
+  }
+  return args;
+}
+
+// Call tool
+async function callTool(toolName) {
+  const args = buildArgs(toolName);
+  if (args === null) return;
+
+  const btn = document.querySelector(`#panel_${toolName} .btn`);
+  const resultDiv = document.getElementById(`result_${toolName}`);
+  const contentDiv = resultDiv.querySelector('.result-content');
+  const timeDiv = resultDiv.querySelector('.result-time');
+
+  btn.classList.add('loading');
+  btn.disabled = true;
+  resultDiv.style.display = 'block';
+  contentDiv.textContent = '実行中...';
+  contentDiv.className = 'result-content';
+  timeDiv.textContent = '';
+
+  const start = Date.now();
+  try {
+    const res = await fetch('/api/tools/call', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name: toolName, arguments: args }),
+    });
+    const data = await res.json();
+    const elapsed = ((Date.now() - start) / 1000).toFixed(1);
+    timeDiv.textContent = `応答時間: ${elapsed}秒`;
+
+    if (!res.ok || data.error) {
+      contentDiv.innerHTML = `<span class="error-text">エラー: ${escapeHtml(data.error?.message || data.error || JSON.stringify(data))}</span>`;
+      return;
+    }
+
+    // Extract text from MCP content array
+    if (data.content && Array.isArray(data.content)) {
+      const text = data.content
+        .filter(c => c.type === 'text')
+        .map(c => c.text)
+        .join('\n\n');
+      contentDiv.textContent = text || JSON.stringify(data, null, 2);
+    } else {
+      contentDiv.textContent = JSON.stringify(data, null, 2);
+    }
+  } catch (err) {
+    const elapsed = ((Date.now() - start) / 1000).toFixed(1);
+    timeDiv.textContent = `応答時間: ${elapsed}秒`;
+    contentDiv.innerHTML = `<span class="error-text">通信エラー: ${escapeHtml(err.message)}</span>`;
+  } finally {
+    btn.classList.remove('loading');
+    btn.disabled = false;
+  }
+}
+
+function escapeHtml(str) {
+  const d = document.createElement('div');
+  d.textContent = str;
+  return d.innerHTML;
+}
+</script>
+</body>
+</html>
